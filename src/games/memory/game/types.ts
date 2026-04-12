@@ -20,6 +20,7 @@ export type GameState = {
 
 export type GameConfig = {
   deck: Animal[]
+  pairCount: number
 }
 
 export type DeckConfig = {
