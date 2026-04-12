@@ -1,7 +1,8 @@
 import type { Card, GameConfig, GameState } from './types'
 
 export function createDeck(config: GameConfig): Card[] {
-  const doubled = [...config.deck, ...config.deck]
+  const selected = config.deck.slice(0, config.pairCount)
+  const doubled = [...selected, ...selected]
   const shuffled = doubled.sort(() => Math.random() - 0.5)
   return shuffled.map((animal, index) => ({
     id: index,
