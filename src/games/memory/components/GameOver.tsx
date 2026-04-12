@@ -1,11 +1,18 @@
+import { useEffect } from 'react'
 import styles from './GameOver.module.css'
 
 type Props = {
   moves: number
   onRestart: () => void
+  onBackToMenu: () => void
 }
 
-export function GameOver({ moves, onRestart }: Props) {
+export function GameOver({ moves, onRestart, onBackToMenu }: Props) {
+  useEffect(() => {
+    const timer = setTimeout(onBackToMenu, 3000)
+    return () => clearTimeout(timer)
+  }, [onBackToMenu])
+
   return (
     <div className={styles.overlay}>
       <div className={styles.card}>
