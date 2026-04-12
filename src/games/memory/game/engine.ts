@@ -1,0 +1,52 @@
+import type { Card, GameConfig, GameState } from './types'
+
+export function createDeck(config: GameConfig): Card[] {
+  const doubled = [...config.deck, ...config.deck]
+  const shuffled = doubled.sort(() => Math.random() - 0.5)
+  return shuffled.map((animal, index) => ({
+    id: index,
+    animalId: animal.id,
+    isFlipped: false,
+    isMatched: false,
+  }))
+}
+
+export function flipCard(state: GameState, id: number): GameState {
+  const card = state.cards.find(c => c.id === id)
+  if (!card || card.isFlipped || card.isMatched || state.flippedIds.length >= 2) {
+    return state
+  }
+  return {
+    ...state,
+    cards: state.cards.map(c => c.id === id ? { ...c, isFlipped: true } : c),
+    flippedIds: [...state.flippedIds, id],
+  }
+}
+
+export function resolvePair(state: GameState): GameState {
+  const [firstId, secondId] = state.flippedIds
+  const first = state.cards.find(c => c.id === firstId)!
+  const second = state.cards.find(c => c.id === secondId)!
+  const matched = first.animalId === second.animalId
+
+  const cards = state.cards.map(c => {
+    if (c.id === firstId || c.id === secondId) {
+      return matched ? { ...c, isMatched: true } : { ...c, isFlipped: false }
+    }
+    return c
+  })
+
+  const next: GameState = {
+    ...state,
+    cards,
+    flippedIds: [],
+    moves: state.moves + 1,
+    isComplete: false,
+  }
+
+  return { ...next, isComplete: isComplete(next) }
+}
+
+export function isComplete(state: GameState): boolean {
+  return state.cards.every(c => c.isMatched)
+}
