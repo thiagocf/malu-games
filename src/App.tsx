@@ -45,7 +45,7 @@ function Game({ deck, pairCount, onBackToMenu }: { deck: DeckConfig; pairCount: 
 
   return (
     <main className="app">
-      <GameHeader moves={moves} onRestart={restart} />
+      <GameHeader moves={moves} onAbandon={onBackToMenu} />
       <Board cards={cards} animals={deck.items} onFlip={flipCard} />
       {isComplete && <GameOver moves={moves} onRestart={restart} onBackToMenu={onBackToMenu} />}
     </main>
