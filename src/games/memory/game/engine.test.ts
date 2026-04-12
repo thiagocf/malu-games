@@ -7,6 +7,7 @@ const config: GameConfig = {
     { id: 'dog', emoji: '🐶', label: 'Cachorro' },
     { id: 'cat', emoji: '🐱', label: 'Gato' },
   ],
+  pairCount: 2,
 }
 
 function makeState(overrides?: Partial<GameState>): GameState {
@@ -45,6 +46,48 @@ describe('createDeck', () => {
   it('starts all cards unflipped and unmatched', () => {
     const deck = createDeck(config)
     expect(deck.every(c => !c.isFlipped && !c.isMatched)).toBe(true)
+  })
+
+  it('creates only the number of pairs specified by pairCount', () => {
+    const bigDeck: GameConfig = {
+      deck: [
+        { id: 'dog', emoji: '🐶', label: 'Cachorro' },
+        { id: 'cat', emoji: '🐱', label: 'Gato' },
+        { id: 'frog', emoji: '🐸', label: 'Sapo' },
+        { id: 'lion', emoji: '🦁', label: 'Leão' },
+        { id: 'rabbit', emoji: '🐰', label: 'Coelho' },
+        { id: 'bear', emoji: '🐻', label: 'Urso' },
+      ],
+      pairCount: 4,
+    }
+    const deck = createDeck(bigDeck)
+    expect(deck).toHaveLength(8)
+    const uniqueIds = new Set(deck.map(c => c.animalId))
+    expect(uniqueIds.size).toBe(4)
+  })
+
+  it('creates 24 cards when pairCount is 12', () => {
+    const items = Array.from({ length: 12 }, (_, i) => ({
+      id: `item-${i}`,
+      emoji: '🔵',
+      label: `Item ${i}`,
+    }))
+    const deck = createDeck({ deck: items, pairCount: 12 })
+    expect(deck).toHaveLength(24)
+    const uniqueIds = new Set(deck.map(c => c.animalId))
+    expect(uniqueIds.size).toBe(12)
+  })
+
+  it('each animalId appears exactly twice', () => {
+    const items = Array.from({ length: 6 }, (_, i) => ({
+      id: `item-${i}`,
+      emoji: '🔵',
+      label: `Item ${i}`,
+    }))
+    const deck = createDeck({ deck: items, pairCount: 6 })
+    const counts = new Map<string, number>()
+    deck.forEach(c => counts.set(c.animalId, (counts.get(c.animalId) ?? 0) + 1))
+    counts.forEach(count => expect(count).toBe(2))
   })
 })
 
