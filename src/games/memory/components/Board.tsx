@@ -12,12 +12,13 @@ export function Board({ cards, animals, onFlip }: Props) {
   const emojiMap = Object.fromEntries(animals.map(a => [a.id, a.emoji]))
   return (
     <div className={styles.grid}>
-      {cards.map(card => (
+      {cards.map((card, index) => (
         <Card
           key={card.id}
           card={card}
           animalEmoji={emojiMap[card.animalId]}
           onClick={() => onFlip(card.id)}
+          index={index}
         />
       ))}
     </div>

@@ -3,11 +3,23 @@
   aspect-ratio: 1;
   perspective: 600px;
   cursor: pointer;
+  animation: dealIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes dealIn {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .scene.matched {
   cursor: default;
-  opacity: 0.55;
 }
 
 .card {
@@ -15,10 +27,15 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.4s ease;
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card.flipped {
+.scene:active:not(.matched) .card {
+  transform: scale(0.93);
+}
+
+.card.flipped,
+.scene:active .card.flipped {
   transform: rotateY(180deg);
 }
 
@@ -34,11 +51,40 @@
 
 .back {
   background: linear-gradient(135deg, #c084fc, #f0abfc);
-  font-size: clamp(1.2rem, 4vw, 1.8rem);
-  font-weight: 800;
-  color: #fff;
   box-shadow: 0 4px 12px rgba(192, 132, 252, 0.4);
   user-select: none;
+  overflow: hidden;
+}
+
+.back::before {
+  content: '✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.5rem, 1.5vw, 0.75rem);
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.4em;
+  word-spacing: 0.4em;
+  white-space: normal;
+  text-align: center;
+  padding: 4px;
+  line-height: 1.6;
+}
+
+.backStars {
+  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+  color: #fff;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+  animation: starPulse 2.4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1);    opacity: 1;    }
+  50%       { transform: scale(1.12); opacity: 0.75; }
 }
 
 .front {
@@ -50,5 +96,37 @@
 }
 
 .matched .front {
-  border-color: rgba(134, 239, 172, 0.8);
+  border-color: #86efac;
+  box-shadow: 0 0 0 3px #86efac, 0 4px 20px rgba(74, 222, 128, 0.45);
+  background: rgba(240, 255, 244, 0.92);
+  animation: matchPop 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes matchPop {
+  0%   { transform: rotateY(180deg) scale(1); }
+  30%  { transform: rotateY(180deg) scale(1.18); }
+  55%  { transform: rotateY(180deg) scale(0.94); }
+  75%  { transform: rotateY(180deg) scale(1.08); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+.matched .front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 0.7s ease 0.1s both;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
 }
