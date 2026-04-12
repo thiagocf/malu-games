@@ -25,3 +25,6 @@ dist-ssr
 
 # Superpowers brainstorming sessions
 .superpowers/
+
+# Git worktrees
+.worktrees/
