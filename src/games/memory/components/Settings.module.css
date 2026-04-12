@@ -120,3 +120,107 @@
   margin: 0.75rem 0 0;
   font-weight: 600;
 }
+
+/* Save button */
+
+.save {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border: none;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.9rem 2.5rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
+  transition: opacity 0.15s, background 0.2s;
+  margin-top: 2rem;
+}
+
+.save:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.savedFeedback {
+  background: linear-gradient(135deg, #16a34a, #4ade80);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.3);
+  cursor: default;
+}
+
+/* Unsaved-changes confirmation overlay */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.dialogTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #374151;
+  margin: 0 0 0.5rem;
+}
+
+.dialogBody {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+}
+
+.dialogButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btnSave {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+  transition: opacity 0.15s;
+}
+
+.btnSave:hover {
+  opacity: 0.85;
+}
+
+.btnDiscard {
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(192, 132, 252, 0.3);
+  border-radius: 12px;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.btnDiscard:hover {
+  opacity: 0.85;
+}
