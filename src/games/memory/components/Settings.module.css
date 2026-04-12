@@ -1,0 +1,122 @@
+.container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+}
+
+.back {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(192, 132, 252, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  color: #7c3aed;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.back:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.22);
+  border-color: #c084fc;
+}
+
+.back:active {
+  transform: scale(0.96);
+}
+
+.title {
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(192, 132, 252, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+}
+
+.label {
+  font-weight: 800;
+  color: #374151;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+.options {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.option {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(192, 132, 252, 0.2);
+  color: #374151;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.option:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.22);
+  border-color: #c084fc;
+}
+
+.option:active {
+  transform: scale(0.96);
+}
+
+.selected {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.selected:hover {
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.4);
+}
+
+.hint {
+  color: #9ca3af;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  text-align: center;
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+}
