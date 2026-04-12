@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { createDeck, flipCard, resolvePair } from './engine'
 import type { GameConfig, GameState } from './types'
 
@@ -10,16 +10,19 @@ export function useGame(config: GameConfig) {
     isComplete: false,
   }))
 
+  useEffect(() => {
+    if (state.flippedIds.length === 2) {
+      const timer = setTimeout(() => {
+        setState(s => resolvePair(s))
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [state.flippedIds])
+
   const handleFlip = useCallback((id: number) => {
     setState(prev => {
       if (prev.flippedIds.length >= 2) return prev
-      const next = flipCard(prev, id)
-      if (next.flippedIds.length === 2) {
-        setTimeout(() => {
-          setState(s => resolvePair(s))
-        }, 1000)
-      }
-      return next
+      return flipCard(prev, id)
     })
   }, [])
 
