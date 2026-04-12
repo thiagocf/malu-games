@@ -88,9 +88,11 @@ type GameConfig = {
 Funções puras, sem efeitos colaterais, sem dependência de React:
 
 - `createDeck(config: GameConfig): Card[]` — gera 16 cartas (2× cada animal), embaralhadas
-- `flipCard(state: GameState, id: number): GameState` — vira uma carta; se 2 estiverem abertas, compara o par
-- `checkPair(state: GameState): GameState` — marca `isMatched` se os IDs dos animais forem iguais; caso contrário, desvia para `isFlipping: false` após delay
+- `flipCard(state: GameState, id: number): GameState` — vira uma carta (só age se menos de 2 cartas estão abertas e a carta não está matched)
+- `resolvePair(state: GameState): GameState` — chamada quando 2 cartas estão abertas: marca `isMatched: true` se formam par, ou desvira ambas caso contrário. Sem delays — efeitos de tempo ficam no hook.
 - `isComplete(state: GameState): boolean` — retorna `true` quando todas as cartas estão matched
+
+O `useGame.ts` é responsável pelo `setTimeout` de 1s antes de chamar `resolvePair` em caso de erro — lógica de tempo não pertence a funções puras.
 
 ---
 
