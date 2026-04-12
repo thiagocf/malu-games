@@ -21,3 +21,10 @@ export type GameState = {
 export type GameConfig = {
   deck: Animal[]
 }
+
+export type DeckConfig = {
+  id: string
+  name: string
+  emoji: string
+  items: Animal[]
+}
