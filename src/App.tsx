@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useGame } from './games/memory/game/useGame'
+import { Board } from './games/memory/components/Board'
+import { GameHeader } from './games/memory/components/GameHeader'
+import { GameOver } from './games/memory/components/GameOver'
+import { ANIMALS } from './games/memory/assets/animals/animals'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const config = { deck: ANIMALS }
+
+export function App() {
+  const { cards, moves, isComplete, flipCard, restart } = useGame(config)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className="app">
+      <GameHeader moves={moves} onRestart={restart} />
+      <Board cards={cards} animals={ANIMALS} onFlip={flipCard} />
+      {isComplete && <GameOver moves={moves} onRestart={restart} />}
+    </main>
   )
 }
-
-export default App
