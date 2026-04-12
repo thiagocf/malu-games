@@ -43,7 +43,7 @@
 
 .front {
   background: rgba(255, 255, 255, 0.85);
-  font-size: clamp(2.2rem, 7vw, 3.4rem);
+  font-size: clamp(3rem, 9vw, 5rem);
   transform: rotateY(180deg);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.9);
