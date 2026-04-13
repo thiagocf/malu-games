@@ -1,15 +1,10 @@
 import { useState, useCallback, useEffect } from 'react'
-import { createDeck, flipCard, resolvePair } from './engine'
+import { createGame, flipCard, resolvePair } from './engine'
 import type { GameConfig, GameState } from './types'
 import { useSounds } from './useSounds'
 
 export function useGame(config: GameConfig) {
-  const [state, setState] = useState<GameState>(() => ({
-    cards: createDeck(config),
-    flippedIds: [],
-    moves: 0,
-    isComplete: false,
-  }))
+  const [state, setState] = useState<GameState>(() => createGame(config))
 
   const { playFlip, playMatch, playWin } = useSounds()
 
@@ -39,18 +34,15 @@ export function useGame(config: GameConfig) {
   }, [playFlip])
 
   const restart = useCallback(() => {
-    setState({
-      cards: createDeck(config),
-      flippedIds: [],
-      moves: 0,
-      isComplete: false,
-    })
+    setState(createGame(config))
   }, [config])
 
   return {
     cards: state.cards,
     moves: state.moves,
     isComplete: state.isComplete,
+    players: state.players,
+    currentPlayerIndex: state.currentPlayerIndex,
     flipCard: handleFlip,
     restart,
   }
