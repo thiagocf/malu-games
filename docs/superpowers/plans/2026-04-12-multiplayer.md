@@ -206,38 +206,15 @@ Expected: `createGame` describe passes (5 tests). `resolvePair` tests still fail
 - Modify: `src/games/memory/game/engine.test.ts`
 - Modify: `src/games/memory/game/engine.ts`
 
-- [ ] **Step 1: Add failing player behavior tests inside the existing `resolvePair` describe**
+- [ ] **Step 1: Add CONTRACT and behavior tests after the existing `resolvePair` describe**
 
-Append these test cases **inside** the existing `describe('resolvePair', ...)` block, after the last existing `it(...)`:
+Append these new describe blocks **after** the closing `})` of the existing `describe('resolvePair', ...)`:
 
 ```ts
-  it('increments pairsFound for current player on match', () => {
-    const state = makeState({
-      cards: [
-        { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
-        { id: 1, animalId: 'cat', isFlipped: false, isMatched: false },
-        { id: 2, animalId: 'dog', isFlipped: true, isMatched: false },
-        { id: 3, animalId: 'cat', isFlipped: false, isMatched: false },
-      ],
-      flippedIds: [0, 2],
-    })
-    expect(resolvePair(state).players[0].pairsFound).toBe(1)
-  })
+// ─── CONTRACT: turno de jogo ─────────────────────────────────────────────────
 
-  it('does not increment pairsFound on miss', () => {
-    const state = makeState({
-      cards: [
-        { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
-        { id: 1, animalId: 'cat', isFlipped: true, isMatched: false },
-        { id: 2, animalId: 'dog', isFlipped: false, isMatched: false },
-        { id: 3, animalId: 'cat', isFlipped: false, isMatched: false },
-      ],
-      flippedIds: [0, 1],
-    })
-    expect(resolvePair(state).players[0].pairsFound).toBe(0)
-  })
-
-  it('keeps currentPlayerIndex on match (solo stays at 0)', () => {
+describe('CONTRACT: acerto mantém a vez', () => {
+  it('solo — currentPlayerIndex permanece 0 após par encontrado', () => {
     const state = makeState({
       cards: [
         { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
@@ -250,7 +227,24 @@ Append these test cases **inside** the existing `describe('resolvePair', ...)` b
     expect(resolvePair(state).currentPlayerIndex).toBe(0)
   })
 
-  it('advances currentPlayerIndex on miss in duo', () => {
+  it('duo — currentPlayerIndex não avança quando o jogador acerta', () => {
+    const state = makeState({
+      cards: [
+        { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
+        { id: 1, animalId: 'cat', isFlipped: false, isMatched: false },
+        { id: 2, animalId: 'dog', isFlipped: true, isMatched: false },
+        { id: 3, animalId: 'cat', isFlipped: false, isMatched: false },
+      ],
+      flippedIds: [0, 2],
+      players: [{ name: 'P1', pairsFound: 0 }, { name: 'P2', pairsFound: 0 }],
+      currentPlayerIndex: 1,
+    })
+    expect(resolvePair(state).currentPlayerIndex).toBe(1)
+  })
+})
+
+describe('CONTRACT: erro passa a vez', () => {
+  it('duo — currentPlayerIndex avança de 0 para 1 após erro', () => {
     const state = makeState({
       cards: [
         { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
@@ -265,7 +259,7 @@ Append these test cases **inside** the existing `describe('resolvePair', ...)` b
     expect(resolvePair(state).currentPlayerIndex).toBe(1)
   })
 
-  it('wraps currentPlayerIndex back to 0 when last player misses', () => {
+  it('duo — currentPlayerIndex volta para 0 quando o último jogador erra (wrap)', () => {
     const state = makeState({
       cards: [
         { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
@@ -280,22 +274,22 @@ Append these test cases **inside** the existing `describe('resolvePair', ...)` b
     expect(resolvePair(state).currentPlayerIndex).toBe(0)
   })
 
-  it('keeps currentPlayerIndex for the player who matched in duo', () => {
+  it('solo — currentPlayerIndex permanece 0 após erro (nunca troca)', () => {
     const state = makeState({
       cards: [
         { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
-        { id: 1, animalId: 'cat', isFlipped: false, isMatched: false },
-        { id: 2, animalId: 'dog', isFlipped: true, isMatched: false },
+        { id: 1, animalId: 'cat', isFlipped: true, isMatched: false },
+        { id: 2, animalId: 'dog', isFlipped: false, isMatched: false },
         { id: 3, animalId: 'cat', isFlipped: false, isMatched: false },
       ],
-      flippedIds: [0, 2],
-      players: [{ name: 'P1', pairsFound: 0 }, { name: 'P2', pairsFound: 0 }],
-      currentPlayerIndex: 1,
+      flippedIds: [0, 1],
     })
-    expect(resolvePair(state).currentPlayerIndex).toBe(1)
+    expect(resolvePair(state).currentPlayerIndex).toBe(0)
   })
+})
 
-  it('only increments pairsFound for the current player, not the other', () => {
+describe('CONTRACT: placar isolado por jogador', () => {
+  it('só o jogador atual recebe ponto ao acertar — o outro permanece inalterado', () => {
     const state = makeState({
       cards: [
         { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
@@ -311,6 +305,24 @@ Append these test cases **inside** the existing `describe('resolvePair', ...)` b
     expect(next.players[0].pairsFound).toBe(0)
     expect(next.players[1].pairsFound).toBe(1)
   })
+
+  it('nenhum jogador recebe ponto em um erro', () => {
+    const state = makeState({
+      cards: [
+        { id: 0, animalId: 'dog', isFlipped: true, isMatched: false },
+        { id: 1, animalId: 'cat', isFlipped: true, isMatched: false },
+        { id: 2, animalId: 'dog', isFlipped: false, isMatched: false },
+        { id: 3, animalId: 'cat', isFlipped: false, isMatched: false },
+      ],
+      flippedIds: [0, 1],
+      players: [{ name: 'P1', pairsFound: 2 }, { name: 'P2', pairsFound: 1 }],
+      currentPlayerIndex: 0,
+    })
+    const next = resolvePair(state)
+    expect(next.players[0].pairsFound).toBe(2)
+    expect(next.players[1].pairsFound).toBe(1)
+  })
+})
 ```
 
 - [ ] **Step 2: Run tests — new resolvePair player tests should fail**
@@ -1265,6 +1277,25 @@ describe('CONTRACT: auto-redirect após 3000ms (solo only)', () => {
   })
 })
 
+describe('CONTRACT: auto-redirect ausente em modo duo', () => {
+  beforeEach(() => { vi.useFakeTimers() })
+  afterEach(() => { vi.useRealTimers() })
+
+  it('duo com vencedor — sem redirect após qualquer tempo', () => {
+    const onBackToMenu = vi.fn()
+    render(<GameOver moves={10} players={duoWinner} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
+    act(() => { vi.advanceTimersByTime(60000) })
+    expect(onBackToMenu).not.toHaveBeenCalled()
+  })
+
+  it('duo em empate — sem redirect após qualquer tempo', () => {
+    const onBackToMenu = vi.fn()
+    render(<GameOver moves={10} players={duoTie} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
+    act(() => { vi.advanceTimersByTime(60000) })
+    expect(onBackToMenu).not.toHaveBeenCalled()
+  })
+})
+
 describe('GameOver — modo solo', () => {
   beforeEach(() => { vi.useFakeTimers() })
   afterEach(() => { vi.useRealTimers() })
@@ -1501,3 +1532,45 @@ Verify manually:
 4. Duo match → same player keeps turn; miss → turn passes
 5. Duo game over → correct winner or "Empate!"; no auto-redirect
 6. Solo game over → player name shown; auto-redirects after 3s
+
+---
+
+## Task 9: Register new CONTRACTs in CLAUDE.md
+
+**Files:**
+- Modify: `CLAUDE.md`
+
+The `CONTRACT: ...` test blocks added in Tasks 3 and 8 introduce new invariants. They must be registered in CLAUDE.md so future AI agents know they exist and must not be weakened.
+
+- [ ] **Step 1: Add new contracts to the "Contratos de regressão" section in CLAUDE.md**
+
+Find the existing `## Contratos de regressão (CONTRACT tests)` section and append the new entries to the list of known contracts:
+
+```markdown
+## Contratos de regressão (CONTRACT tests)
+
+Blocos de teste nomeados `CONTRACT: ...` são invariantes do jogo.
+
+**Regras para agentes de IA:**
+- Nunca delete ou enfraqueça um bloco `CONTRACT: ...`
+- Se sua implementação causar falha em um CONTRACT, pare e reporte o conflito — não altere o teste
+- Para mudar um contrato intencionalmente, o humano deve instruir explicitamente (ex: "Mude o CONTRACT do delay para 500ms")
+- Novos invariantes descobertos podem receber seu próprio bloco `CONTRACT: ...`
+
+**Contratos ativos:**
+
+| Arquivo | Contrato | Invariante |
+|---|---|---|
+| `GameOver.test.tsx` | `CONTRACT: auto-redirect após 3000ms` | Solo redireciona ao menu após 3s; o timer é cancelado se o componente desmonta |
+| `engine.test.ts` | `CONTRACT: acerto mantém a vez` | Após par encontrado, `currentPlayerIndex` não avança — em solo ou duo |
+| `engine.test.ts` | `CONTRACT: erro passa a vez` | Após erro, `currentPlayerIndex` avança (com wrap); em solo permanece 0 |
+| `engine.test.ts` | `CONTRACT: placar isolado por jogador` | Só o jogador atual recebe ponto; erro não concede pontos a ninguém |
+| `GameOver.test.tsx` | `CONTRACT: auto-redirect ausente em modo duo` | Tela de fim de jogo duo nunca chama `onBackToMenu` automaticamente |
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add CLAUDE.md
+git commit -m "docs: register multiplayer CONTRACT tests in CLAUDE.md"
+```
