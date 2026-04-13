@@ -103,3 +103,45 @@
 .button:hover {
   opacity: 0.85;
 }
+
+/* Duo scoreboard */
+
+.scores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.scoreRow {
+  font-size: 1rem;
+  color: #7c3aed;
+  margin: 0;
+}
+
+/* Duo button group */
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.buttonSecondary {
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(192, 132, 252, 0.3);
+  border-radius: 14px;
+  color: #7c3aed;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.buttonSecondary:hover {
+  opacity: 0.85;
+}
