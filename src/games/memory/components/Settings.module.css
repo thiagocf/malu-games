@@ -224,3 +224,42 @@
 .btnDiscard:hover {
   opacity: 0.85;
 }
+
+/* Mode toggle (wider than pair-count options) */
+
+.modeOption {
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1.25rem;
+}
+
+/* Player name inputs */
+
+.nameField {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.nameField:first-child {
+  margin-top: 0;
+}
+
+.nameInput {
+  flex: 1;
+  border: 2px solid rgba(192, 132, 252, 0.3);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  background: rgba(255, 255, 255, 0.8);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.nameInput:focus {
+  border-color: #a855f7;
+}
