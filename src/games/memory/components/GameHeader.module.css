@@ -137,3 +137,45 @@
 .btnConfirm:hover {
   opacity: 0.85;
 }
+
+/* Scoreboard bar */
+
+.scoreboard {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 0.5rem 1.25rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.scores {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.player {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+.activePlayer {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ec4899;
+  text-decoration: underline;
+}
+
+.turn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9333ea;
+  margin: 0.25rem 0 0;
+  letter-spacing: 0.03em;
+}
