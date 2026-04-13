@@ -90,3 +90,23 @@ type GameConfig = { deck: Animal[] }
 - v2: seleção de tema (Animais, Frutas, Cores & Formas)
 - v3: deck personalizado via upload de fotos
 - v4: React Native/Expo para iOS/Android
+
+## Contratos de regressão (CONTRACT tests)
+
+Blocos de teste nomeados `CONTRACT: ...` são invariantes do jogo.
+
+**Regras para agentes:**
+- Nunca delete ou enfraqueça um bloco `CONTRACT: ...`
+- Se sua implementação causar falha em um CONTRACT, pare e reporte o conflito — não altere o teste
+- Para mudar um contrato intencionalmente, o humano deve instruir explicitamente (ex: "Mude o CONTRACT do delay para 500ms")
+- Novos invariantes descobertos podem receber seu próprio bloco `CONTRACT: ...`
+
+Contratos ativos:
+- `flipCard` retorna mesma referência quando guardado (React optimization)
+- `resolvePair` incrementa moves em exatamente +1
+- `resolvePair` sempre limpa flippedIds
+- 1s de delay antes de resolvePair (UX deliberado)
+- `isComplete` só true quando TODOS os cards estão matched
+- IDs de items de deck são estáveis entre versões
+- `createDeck` retorna 2 * pairCount cards
+- Auto-redirect de GameOver em 3000ms
