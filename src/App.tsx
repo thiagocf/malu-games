@@ -6,21 +6,28 @@ import { GameOver } from './games/memory/components/GameOver'
 import { DeckSelector } from './games/memory/components/DeckSelector'
 import { Settings } from './games/memory/components/Settings'
 import { DECKS } from './games/memory/assets/decks/decks'
-import type { DeckConfig } from './games/memory/game/types'
+import type { DeckConfig, PlayerMode } from './games/memory/game/types'
 import './App.css'
 
 const DEFAULT_PAIR_COUNT = 8
+const DEFAULT_PLAYER_NAMES = ['Jogador 1', 'Jogador 2']
 
 export function App() {
   const [selectedDeck, setSelectedDeck] = useState<DeckConfig | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [pairCount, setPairCount] = useState(DEFAULT_PAIR_COUNT)
+  const [playerMode, setPlayerMode] = useState<PlayerMode>('solo')
+  const [playerNames, setPlayerNames] = useState<string[]>(DEFAULT_PLAYER_NAMES)
 
   if (showSettings) {
     return (
       <Settings
         pairCount={pairCount}
         onChangePairCount={setPairCount}
+        playerMode={playerMode}
+        playerNames={playerNames}
+        onChangePlayerMode={setPlayerMode}
+        onChangePlayerNames={setPlayerNames}
         onBack={() => setShowSettings(false)}
       />
     )
@@ -36,18 +43,57 @@ export function App() {
     )
   }
 
-  return <Game deck={selectedDeck} pairCount={pairCount} onBackToMenu={() => setSelectedDeck(null)} />
+  const activePlayers = playerMode === 'duo' ? playerNames : [playerNames[0]]
+
+  return (
+    <Game
+      deck={selectedDeck}
+      pairCount={pairCount}
+      players={activePlayers}
+      onBackToMenu={() => setSelectedDeck(null)}
+    />
+  )
 }
 
-function Game({ deck, pairCount, onBackToMenu }: { deck: DeckConfig; pairCount: number; onBackToMenu: () => void }) {
-  const config = { deck: deck.items, pairCount }
-  const { cards, moves, isComplete, flipCard, restart } = useGame(config)
+function Game({
+  deck,
+  pairCount,
+  players,
+  onBackToMenu,
+}: {
+  deck: DeckConfig
+  pairCount: number
+  players: string[]
+  onBackToMenu: () => void
+}) {
+  const config = { deck: deck.items, pairCount, players }
+  const {
+    cards,
+    moves,
+    isComplete,
+    players: playerState,
+    currentPlayerIndex,
+    flipCard,
+    restart,
+  } = useGame(config)
 
   return (
     <main className="app">
-      <GameHeader moves={moves} onAbandon={onBackToMenu} />
+      <GameHeader
+        moves={moves}
+        players={playerState}
+        currentPlayerIndex={currentPlayerIndex}
+        onAbandon={onBackToMenu}
+      />
       <Board cards={cards} animals={deck.items} onFlip={flipCard} />
-      {isComplete && <GameOver moves={moves} onRestart={restart} onBackToMenu={onBackToMenu} />}
+      {isComplete && (
+        <GameOver
+          moves={moves}
+          players={playerState}
+          onRestart={restart}
+          onBackToMenu={onBackToMenu}
+        />
+      )}
     </main>
   )
 }
