@@ -26,12 +26,12 @@ export class UsersController {
     @CurrentUser() user: AuthenticatedUser,
     @Body() dto: UpdateUserDto,
   ) {
-    await this.usersService.findOrCreate(user.userId, user.email);
+    const dbUser = await this.usersService.findOrCreate(user.userId, user.email);
 
     if (dto.name !== undefined) {
       return this.usersService.updateName(user.userId, dto.name);
     }
 
-    return this.usersService.findOrCreate(user.userId, user.email);
+    return dbUser;
   }
 }
