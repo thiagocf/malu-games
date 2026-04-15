@@ -6,6 +6,7 @@ import { GameOver } from './games/memory/components/GameOver'
 import { DeckSelector } from './games/memory/components/DeckSelector'
 import { Settings } from './games/memory/components/Settings'
 import { DECKS } from './games/memory/assets/decks/decks'
+import { LoginButton } from './auth/LoginButton'
 import type { DeckConfig, PlayerMode } from './games/memory/game/types'
 import './App.css'
 
@@ -19,39 +20,34 @@ export function App() {
   const [playerMode, setPlayerMode] = useState<PlayerMode>('solo')
   const [playerNames, setPlayerNames] = useState<string[]>(DEFAULT_PLAYER_NAMES)
 
-  if (showSettings) {
-    return (
-      <Settings
-        pairCount={pairCount}
-        onChangePairCount={setPairCount}
-        playerMode={playerMode}
-        playerNames={playerNames}
-        onChangePlayerMode={setPlayerMode}
-        onChangePlayerNames={setPlayerNames}
-        onBack={() => setShowSettings(false)}
-      />
-    )
-  }
-
-  if (!selectedDeck) {
-    return (
-      <DeckSelector
-        decks={DECKS}
-        onSelect={setSelectedDeck}
-        onOpenSettings={() => setShowSettings(true)}
-      />
-    )
-  }
-
-  const activePlayers = playerMode === 'duo' ? playerNames : [playerNames[0]]
-
   return (
-    <Game
-      deck={selectedDeck}
-      pairCount={pairCount}
-      players={activePlayers}
-      onBackToMenu={() => setSelectedDeck(null)}
-    />
+    <>
+      <LoginButton />
+      {showSettings ? (
+        <Settings
+          pairCount={pairCount}
+          onChangePairCount={setPairCount}
+          playerMode={playerMode}
+          playerNames={playerNames}
+          onChangePlayerMode={setPlayerMode}
+          onChangePlayerNames={setPlayerNames}
+          onBack={() => setShowSettings(false)}
+        />
+      ) : !selectedDeck ? (
+        <DeckSelector
+          decks={DECKS}
+          onSelect={setSelectedDeck}
+          onOpenSettings={() => setShowSettings(true)}
+        />
+      ) : (
+        <Game
+          deck={selectedDeck}
+          pairCount={pairCount}
+          players={playerMode === 'duo' ? playerNames : [playerNames[0]]}
+          onBackToMenu={() => setSelectedDeck(null)}
+        />
+      )}
+    </>
   )
 }
 
