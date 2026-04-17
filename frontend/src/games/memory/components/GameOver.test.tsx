@@ -7,31 +7,14 @@ const soloPlayer: Player[] = [{ name: 'Bea', pairsFound: 4 }]
 const duoWinner: Player[] = [{ name: 'Ana', pairsFound: 5 }, { name: 'Beto', pairsFound: 3 }]
 const duoTie: Player[] = [{ name: 'Ana', pairsFound: 4 }, { name: 'Beto', pairsFound: 4 }]
 
-describe('CONTRACT: auto-redirect após 3000ms (solo only)', () => {
+describe('CONTRACT: sem auto-redirect (solo e duo)', () => {
   beforeEach(() => { vi.useFakeTimers() })
   afterEach(() => { vi.useRealTimers() })
 
-  it('não chama onBackToMenu antes de 3000ms em modo solo', () => {
+  it('NÃO chama onBackToMenu automaticamente em modo solo', () => {
     const onBackToMenu = vi.fn()
     render(<GameOver moves={10} players={soloPlayer} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
-    act(() => { vi.advanceTimersByTime(2999) })
-    expect(onBackToMenu).not.toHaveBeenCalled()
-  })
-
-  it('chama onBackToMenu exatamente uma vez após 3000ms em modo solo', () => {
-    const onBackToMenu = vi.fn()
-    render(<GameOver moves={10} players={soloPlayer} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
-    act(() => { vi.advanceTimersByTime(3000) })
-    expect(onBackToMenu).toHaveBeenCalledTimes(1)
-  })
-
-  it('timer é cancelado se componente desmonta (sem memory leak)', () => {
-    const onBackToMenu = vi.fn()
-    const { unmount } = render(
-      <GameOver moves={10} players={soloPlayer} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />
-    )
-    unmount()
-    act(() => { vi.advanceTimersByTime(3000) })
+    act(() => { vi.advanceTimersByTime(10000) })
     expect(onBackToMenu).not.toHaveBeenCalled()
   })
 
@@ -79,8 +62,15 @@ describe('GameOver — modo solo', () => {
   it('botão "Jogar de novo" chama onRestart', () => {
     const onRestart = vi.fn()
     render(<GameOver moves={5} players={soloPlayer} onRestart={onRestart} onBackToMenu={vi.fn()} />)
-    fireEvent.click(screen.getByText('Jogar de novo'))
+    fireEvent.click(screen.getByText(/Jogar de novo/))
     expect(onRestart).toHaveBeenCalledTimes(1)
+  })
+
+  it('botão "Outro jogo" chama onBackToMenu em modo solo', () => {
+    const onBackToMenu = vi.fn()
+    render(<GameOver moves={5} players={soloPlayer} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
+    fireEvent.click(screen.getByText(/Outro jogo/))
+    expect(onBackToMenu).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -104,14 +94,14 @@ describe('GameOver — modo duo', () => {
   it('botão "Jogar de novo" chama onRestart em modo duo', () => {
     const onRestart = vi.fn()
     render(<GameOver moves={10} players={duoWinner} onRestart={onRestart} onBackToMenu={vi.fn()} />)
-    fireEvent.click(screen.getByText('Jogar de novo'))
+    fireEvent.click(screen.getByText(/Jogar de novo/))
     expect(onRestart).toHaveBeenCalledTimes(1)
   })
 
-  it('botão "Menu" chama onBackToMenu em modo duo', () => {
+  it('botão "Outro jogo" chama onBackToMenu em modo duo', () => {
     const onBackToMenu = vi.fn()
     render(<GameOver moves={10} players={duoWinner} onRestart={vi.fn()} onBackToMenu={onBackToMenu} />)
-    fireEvent.click(screen.getByText('Menu'))
+    fireEvent.click(screen.getByText(/Outro jogo/))
     expect(onBackToMenu).toHaveBeenCalledTimes(1)
   })
 })

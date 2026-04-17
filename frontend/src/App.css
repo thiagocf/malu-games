@@ -4,5 +4,6 @@
   flex-direction: column;
   align-items: center;
   padding: clamp(1rem, 4vw, 2rem);
+  padding-top: calc(56px + clamp(1rem, 4vw, 2rem));
   gap: 1.5rem;
 }

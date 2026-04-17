@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import type { Player } from '../game/types'
 import styles from './GameOver.module.css'
 
@@ -11,12 +10,6 @@ type Props = {
 
 export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
   const isDuo = players.length > 1
-
-  useEffect(() => {
-    if (isDuo) return
-    const timer = setTimeout(onBackToMenu, 3000)
-    return () => clearTimeout(timer)
-  }, [onBackToMenu, isDuo])
 
   if (isDuo) {
     const winner =
@@ -41,8 +34,8 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
             ))}
           </div>
           <div className={styles.buttons}>
-            <button className={styles.button} onClick={onRestart}>Jogar de novo</button>
-            <button className={styles.buttonSecondary} onClick={onBackToMenu}>Menu</button>
+            <button className={styles.button} onClick={onRestart}>🔄 Jogar de novo</button>
+            <button className={styles.buttonSecondary} onClick={onBackToMenu}>🏠 Outro jogo</button>
           </div>
         </div>
       </div>
@@ -64,9 +57,14 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
         <p className={styles.subtitle}>
           Você completou em <strong>{moves}</strong> tentativas!
         </p>
-        <button className={styles.button} onClick={onRestart}>
-          Jogar de novo
-        </button>
+        <div className={styles.buttons}>
+          <button className={styles.button} onClick={onRestart}>
+            🔄 Jogar de novo
+          </button>
+          <button className={styles.buttonSecondary} onClick={onBackToMenu}>
+            🏠 Outro jogo
+          </button>
+        </div>
       </div>
     </div>
   )
