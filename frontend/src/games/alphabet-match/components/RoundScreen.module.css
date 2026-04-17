@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.letterCard {
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(192, 132, 252, 0.3);
+  border-radius: 24px;
+  padding: 1.5rem 2.5rem;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.15);
+}
+
+.letter {
+  font-size: clamp(4rem, 12vw, 6rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.option {
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(192, 132, 252, 0.2);
+  border-radius: 20px;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.22);
+  border-color: #c084fc;
+}
+
+.option:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.option.correct {
+  border-color: #22c55e;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+  animation: glow 0.6s ease;
+}
+
+@keyframes glow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
