@@ -15,16 +15,16 @@ describe('GameHeader — dialog de abandono', () => {
     expect(screen.queryByText('Continuar jogando')).not.toBeInTheDocument()
   })
 
-  it('clicar "Abandonar" abre dialog', () => {
+  it('clicar "✕ Sair" abre dialog', () => {
     render(<GameHeader moves={0} players={soloPlayer} currentPlayerIndex={0} onAbandon={vi.fn()} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Abandonar' }))
+    fireEvent.click(screen.getByRole('button', { name: '✕ Sair' }))
     expect(screen.getByText('Continuar jogando')).toBeInTheDocument()
   })
 
   it('"Continuar jogando" fecha dialog sem chamar onAbandon', () => {
     const onAbandon = vi.fn()
     render(<GameHeader moves={0} players={soloPlayer} currentPlayerIndex={0} onAbandon={onAbandon} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Abandonar' }))
+    fireEvent.click(screen.getByRole('button', { name: '✕ Sair' }))
     fireEvent.click(screen.getByText('Continuar jogando'))
     expect(screen.queryByText('Continuar jogando')).not.toBeInTheDocument()
     expect(onAbandon).not.toHaveBeenCalled()
@@ -33,7 +33,7 @@ describe('GameHeader — dialog de abandono', () => {
   it('"Abandonar" no dialog chama onAbandon', () => {
     const onAbandon = vi.fn()
     render(<GameHeader moves={0} players={soloPlayer} currentPlayerIndex={0} onAbandon={onAbandon} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Abandonar' }))
+    fireEvent.click(screen.getByRole('button', { name: '✕ Sair' }))
     const abandonButtons = screen.getAllByRole('button', { name: 'Abandonar' })
     fireEvent.click(abandonButtons[abandonButtons.length - 1])
     expect(onAbandon).toHaveBeenCalledTimes(1)

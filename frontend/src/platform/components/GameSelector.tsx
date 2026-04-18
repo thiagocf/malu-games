@@ -20,7 +20,7 @@ type Props = {
 export function GameSelector({ onSelect }: Props) {
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>🎮 Malu Games</h1>
+      <h1 className={styles.title}><span style={{color:'#fbbf24'}}>◆</span> Malu Games</h1>
       <p className={styles.subtitle}>Escolhe um jogo!</p>
       <div className={styles.grid}>
         {GAMES.map(game => (

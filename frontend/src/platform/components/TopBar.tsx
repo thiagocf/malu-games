@@ -23,7 +23,7 @@ export function TopBar({ isInGame, onExitGame }: Props) {
           onClick={handleClick}
           disabled={!isInGame}
         >
-          🎮 Malu Games
+          <span style={{color:'#fbbf24'}}>◆</span> Malu Games
         </button>
       </header>
       {showConfirm && (

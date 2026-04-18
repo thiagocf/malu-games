@@ -3,14 +3,14 @@
   aspect-ratio: 1;
   perspective: 600px;
   cursor: pointer;
-  animation: dealIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
+  animation: dealIn 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
 }
 
 @keyframes dealIn {
   from {
     opacity: 0;
-    transform: translateY(-24px) scale(0.8);
+    transform: translateY(-20px) scale(0.85);
   }
   to {
     opacity: 1;
@@ -28,11 +28,11 @@
   position: relative;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .scene:active:not(.matched) .card {
-  transform: scale(0.93);
+  transform: scale(0.97);
 }
 
 .card.flipped,
@@ -43,7 +43,7 @@
 .face {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 14px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
@@ -52,12 +52,10 @@
 }
 
 .back {
-  background: linear-gradient(135deg, #c084fc, #f0abfc);
-  box-shadow: 0 4px 12px rgba(192, 132, 252, 0.4);
+  background: #0d9488;
+  box-shadow: 0 1px 0 rgba(15, 58, 58, 0.08);
   user-select: none;
   overflow: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
 }
 
 .back::before {
@@ -68,7 +66,7 @@
   align-items: center;
   justify-content: center;
   font-size: clamp(0.5rem, 1.5vw, 0.75rem);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.25);
   letter-spacing: 0.4em;
   word-spacing: 0.4em;
   white-space: normal;
@@ -77,40 +75,32 @@
   line-height: 1.6;
 }
 
-.backStars {
-  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
-  color: #fff;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
-  animation: starPulse 2.4s ease-in-out infinite;
+.backMark {
+  font-size: clamp(1.4rem, 4.5vw, 2rem);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 700;
   position: relative;
 }
 
-@keyframes starPulse {
-  0%, 100% { transform: scale(1);    opacity: 1;    }
-  50%       { transform: scale(1.12); opacity: 0.75; }
-}
-
 .front {
-  background: rgba(255, 255, 255, 0.85);
-  font-size: clamp(3rem, 9vw, 5rem);
+  background: #ffffff;
+  font-size: clamp(2rem, 8vw, 3.5rem);
   -webkit-transform: rotateY(180deg) translateZ(1px);
   transform: rotateY(180deg) translateZ(1px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #99f6e4;
 }
 
 .matched .front {
-  border-color: #86efac;
-  box-shadow: 0 0 0 3px #86efac, 0 4px 20px rgba(74, 222, 128, 0.45);
-  background: rgba(240, 255, 244, 0.92);
-  animation: matchPop 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  border-color: #16a34a;
+  border-width: 2px;
+  box-shadow: 0 0 0 4px #bbf7d0;
+  background: #f0fdf4;
+  animation: matchPop 0.16s ease-out both;
 }
 
 @keyframes matchPop {
   0%   { -webkit-transform: rotateY(180deg) translateZ(1px) scale(1);    transform: rotateY(180deg) translateZ(1px) scale(1); }
-  30%  { -webkit-transform: rotateY(180deg) translateZ(1px) scale(1.18); transform: rotateY(180deg) translateZ(1px) scale(1.18); }
-  55%  { -webkit-transform: rotateY(180deg) translateZ(1px) scale(0.94); transform: rotateY(180deg) translateZ(1px) scale(0.94); }
-  75%  { -webkit-transform: rotateY(180deg) translateZ(1px) scale(1.08); transform: rotateY(180deg) translateZ(1px) scale(1.08); }
+  60%  { -webkit-transform: rotateY(180deg) translateZ(1px) scale(1.04); transform: rotateY(180deg) translateZ(1px) scale(1.04); }
   100% { -webkit-transform: rotateY(180deg) translateZ(1px) scale(1);    transform: rotateY(180deg) translateZ(1px) scale(1); }
 }
 
@@ -118,15 +108,15 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 14px;
+  border-radius: 12px;
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.5) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 0.7s ease 0.1s both;
+  animation: shimmer 0.6s ease 0.05s both;
   pointer-events: none;
 }
 

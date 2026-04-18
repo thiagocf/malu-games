@@ -34,8 +34,8 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
             ))}
           </div>
           <div className={styles.buttons}>
-            <button className={styles.button} onClick={onRestart}>🔄 Jogar de novo</button>
-            <button className={styles.buttonSecondary} onClick={onBackToMenu}>🏠 Outro jogo</button>
+            <button className={styles.button} onClick={onRestart}>Jogar de novo</button>
+            <button className={styles.buttonSecondary} onClick={onBackToMenu}>Outro jogo</button>
           </div>
         </div>
       </div>
@@ -46,8 +46,8 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
     <div className={styles.overlay}>
       <div className={styles.card}>
         <div className={styles.confetti} aria-hidden="true">
-          {['🌟', '✨', '🎊', '⭐', '💫', '🌈', '🎉', '🦋'].map((e, i) => (
-            <span key={i} className={styles.confettiPiece} style={{ '--ci': i } as React.CSSProperties}>
+          {['★','✦','✧','◆','✺','✹','❋','✿'].map((e, i) => (
+            <span key={i} className={styles.confettiPiece} style={{ '--ci': i, color: i % 2 ? '#fbbf24' : '#0d9488' } as React.CSSProperties}>
               {e}
             </span>
           ))}
@@ -59,10 +59,10 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
         </p>
         <div className={styles.buttons}>
           <button className={styles.button} onClick={onRestart}>
-            🔄 Jogar de novo
+            Jogar de novo
           </button>
           <button className={styles.buttonSecondary} onClick={onBackToMenu}>
-            🏠 Outro jogo
+            Outro jogo
           </button>
         </div>
       </div>
