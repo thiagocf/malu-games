@@ -89,3 +89,18 @@
   user-select: none;
   -webkit-user-drag: none;
 }
+
+@media (min-width: 600px) {
+  .container {
+    max-width: 640px;
+  }
+
+  .grid {
+    max-width: 520px;
+    gap: 1.25rem;
+  }
+
+  .option {
+    min-height: 120px;
+  }
+}
