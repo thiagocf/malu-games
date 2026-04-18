@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { createGame, checkAnswer, recordAttempt, completeRound, advanceRound } from './engine'
 import type { Animal, GameConfig, GameState } from './types'
 import { useSounds } from './useSounds'
@@ -14,35 +14,30 @@ export function useGame(config: GameConfig) {
 
   const currentRound = state.rounds[state.currentRoundIndex] ?? null
 
+  useEffect(() => {
+    if (state.isComplete) playVictory()
+  }, [state.isComplete, playVictory])
+
   const selectAnimal = useCallback((animalId: string) => {
     if (feedback || showCorrect) return
 
-    setState(prev => {
-      const result = checkAnswer(prev, animalId)
+    const result = checkAnswer(state, animalId)
 
-      if (result.correct) {
-        playCorrect()
-        setShowCorrect(true)
-        const withAttempt = recordAttempt(prev)
-        const completed = completeRound(withAttempt)
+    if (result.correct) {
+      playCorrect()
+      setShowCorrect(true)
+      setState(prev => completeRound(recordAttempt(prev)))
 
-        setTimeout(() => {
-          setState(s => {
-            const next = advanceRound(s)
-            if (next.isComplete) playVictory()
-            return next
-          })
-          setShowCorrect(false)
-        }, 1500)
-
-        return completed
-      }
-
+      setTimeout(() => {
+        setShowCorrect(false)
+        setState(prev => advanceRound(prev))
+      }, 1500)
+    } else {
       playWrong()
       setFeedback({ animal: result.selectedAnimal })
-      return recordAttempt(prev)
-    })
-  }, [feedback, showCorrect, playCorrect, playWrong, playVictory])
+      setState(prev => recordAttempt(prev))
+    }
+  }, [state, feedback, showCorrect, playCorrect, playWrong])
 
   const dismissFeedback = useCallback(() => {
     setFeedback(null)

@@ -17,6 +17,8 @@ export function FeedbackPopup({ animal, onDismiss }: Props) {
           src={animal.imagePath}
           alt={animal.label}
           className={styles.image}
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
         />
         <p className={styles.text}>
           Esse é o <span className={styles.highlight}>{firstLetter}</span>{rest}!

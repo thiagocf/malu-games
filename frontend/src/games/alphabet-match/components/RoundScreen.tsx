@@ -19,6 +19,7 @@ export function RoundScreen({ round, showCorrect, onSelect }: Props) {
           return (
             <button
               key={animal.id}
+              type="button"
               className={`${styles.option} ${showCorrect && isCorrect ? styles.correct : ''}`}
               onClick={() => onSelect(animal.id)}
               disabled={showCorrect}
@@ -27,6 +28,8 @@ export function RoundScreen({ round, showCorrect, onSelect }: Props) {
                 src={animal.imagePath}
                 alt={animal.label}
                 className={styles.image}
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
               />
             </button>
           )

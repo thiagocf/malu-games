@@ -40,6 +40,10 @@
   height: 140px;
   object-fit: contain;
   border-radius: 16px;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .text {
