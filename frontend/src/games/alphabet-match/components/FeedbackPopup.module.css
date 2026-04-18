@@ -36,8 +36,8 @@
 }
 
 .image {
-  width: 140px;
-  height: 140px;
+  width: clamp(80px, 35vw, 140px);
+  height: clamp(80px, 35vw, 140px);
   object-fit: contain;
   border-radius: 16px;
   display: block;
