@@ -4,9 +4,12 @@ const API_BASE_URL =
   import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 async function getAuthHeaders(): Promise<HeadersInit> {
+  const supabase = getSupabase();
+  if (!supabase) return {};
+
   const {
     data: { session },
-  } = await getSupabase().auth.getSession();
+  } = await supabase.auth.getSession();
 
   if (!session?.access_token) return {};
 
