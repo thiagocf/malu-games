@@ -26,6 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = getSupabase();
 
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -43,7 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    await getSupabase().auth.signInWithOAuth({
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin + window.location.pathname,
@@ -52,7 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await getSupabase().auth.signOut();
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await supabase.auth.signOut();
   };
 
   return (
