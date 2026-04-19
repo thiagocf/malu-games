@@ -1,4 +1,5 @@
 import type { Player } from '../game/types'
+import { GameOverScreen } from '../../../platform/components/GameOverScreen'
 import styles from './GameOver.module.css'
 
 type Props = {
@@ -6,9 +7,10 @@ type Props = {
   players: Player[]
   onRestart: () => void
   onBackToMenu: () => void
+  onOpenSettings?: () => void
 }
 
-export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
+export function GameOver({ moves, players, onRestart, onBackToMenu, onOpenSettings }: Props) {
   const isDuo = players.length > 1
 
   if (isDuo) {
@@ -20,52 +22,42 @@ export function GameOver({ moves, players, onRestart, onBackToMenu }: Props) {
           : null
 
     return (
-      <div className={styles.overlay}>
-        <div className={styles.card}>
-          <div className={styles.emoji}>{winner ? '🏆' : '🎉'}</div>
-          <h2 className={styles.title}>
-            {winner ? `${winner.name} ganhou!` : 'Empate!'}
-          </h2>
-          <div className={styles.scores}>
-            {players.map((p, i) => (
-              <p key={i} className={styles.scoreRow}>
-                {p.name}: <strong>{p.pairsFound}</strong> {p.pairsFound === 1 ? 'par' : 'pares'}
-              </p>
-            ))}
-          </div>
-          <div className={styles.buttons}>
-            <button className={styles.button} onClick={onRestart}>Jogar de novo</button>
-            <button className={styles.buttonSecondary} onClick={onBackToMenu}>Outro jogo</button>
-          </div>
+      <GameOverScreen
+        title={winner ? `${winner.name} ganhou!` : 'Empate!'}
+        onRestart={onRestart}
+        onBackToMenu={onBackToMenu}
+        onOpenSettings={onOpenSettings}
+      >
+        <div className={styles.emoji}>{winner ? '🏆' : '🎉'}</div>
+        <div className={styles.scores}>
+          {players.map((p, i) => (
+            <p key={i} className={styles.scoreRow}>
+              {p.name}: <strong>{p.pairsFound}</strong> {p.pairsFound === 1 ? 'par' : 'pares'}
+            </p>
+          ))}
         </div>
-      </div>
+      </GameOverScreen>
     )
   }
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.card}>
-        <div className={styles.confetti} aria-hidden="true">
-          {['★','✦','✧','◆','✺','✹','❋','✿'].map((e, i) => (
-            <span key={i} className={styles.confettiPiece} style={{ '--ci': i, color: i % 2 ? '#fbbf24' : '#0d9488' } as React.CSSProperties}>
-              {e}
-            </span>
-          ))}
-        </div>
-        <div className={styles.emoji}>🎉</div>
-        <h2 className={styles.title}>Parabéns, {players[0].name}!</h2>
-        <p className={styles.subtitle}>
-          Você completou em <strong>{moves}</strong> tentativas!
-        </p>
-        <div className={styles.buttons}>
-          <button className={styles.button} onClick={onRestart}>
-            Jogar de novo
-          </button>
-          <button className={styles.buttonSecondary} onClick={onBackToMenu}>
-            Outro jogo
-          </button>
-        </div>
+    <GameOverScreen
+      title={`Parabéns, ${players[0].name}!`}
+      onRestart={onRestart}
+      onBackToMenu={onBackToMenu}
+      onOpenSettings={onOpenSettings}
+    >
+      <div className={styles.confetti} aria-hidden="true">
+        {['★','✦','✧','◆','✺','✹','❋','✿'].map((e, i) => (
+          <span key={i} className={styles.confettiPiece} style={{ '--ci': i, color: i % 2 ? '#fbbf24' : '#0d9488' } as React.CSSProperties}>
+            {e}
+          </span>
+        ))}
       </div>
-    </div>
+      <div className={styles.emoji}>🎉</div>
+      <p className={styles.subtitle}>
+        Você completou em <strong>{moves}</strong> tentativas!
+      </p>
+    </GameOverScreen>
   )
 }
