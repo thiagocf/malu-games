@@ -42,6 +42,7 @@ export function App() {
         isInGame={selectedGame !== null}
         onExitGame={handleBackToMenu}
       />
+      <div style={{ paddingTop: 'var(--topbar-height)' }}>
       {selectedGame === null && (
         <GameSelector onSelect={setSelectedGame} />
       )}
@@ -75,6 +76,7 @@ export function App() {
       {selectedGame === 'alphabet-match' && (
         <AlphabetMatchGame onBackToMenu={handleBackToMenu} />
       )}
+      </div>
     </>
   )
 }

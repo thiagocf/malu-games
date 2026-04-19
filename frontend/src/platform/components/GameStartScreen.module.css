@@ -1,5 +1,5 @@
 .container {
-  min-height: 100dvh;
+  min-height: calc(100dvh - var(--topbar-height));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,7 +29,7 @@
 
 .gear {
   position: absolute;
-  top: 1.5rem;
+  top: 0.75rem;
   right: 1.5rem;
   width: 44px;
   height: 44px;

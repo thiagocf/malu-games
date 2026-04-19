@@ -1,3 +1,7 @@
+:root {
+  --topbar-height: 56px;
+}
+
 *,
 *::before,
 *::after {

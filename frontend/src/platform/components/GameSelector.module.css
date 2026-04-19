@@ -1,5 +1,5 @@
 .container {
-  min-height: calc(100dvh - 56px);
+  min-height: calc(100dvh - var(--topbar-height));
   display: flex;
   flex-direction: column;
   align-items: center;
