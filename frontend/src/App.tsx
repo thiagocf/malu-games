@@ -31,6 +31,11 @@ export function App() {
 
   const openSettings = () => setShowSettings(true)
 
+  const openSettingsFromGame = () => {
+    setSelectedDeck(null)
+    setShowSettings(true)
+  }
+
   return (
     <>
       <TopBar
@@ -63,7 +68,7 @@ export function App() {
             pairCount={pairCount}
             players={playerMode === 'duo' ? playerNames : [playerNames[0]]}
             onBackToMenu={handleBackToMenu}
-            onOpenSettings={openSettings}
+            onOpenSettings={openSettingsFromGame}
           />
         )
       )}
