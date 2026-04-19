@@ -29,6 +29,13 @@ export function App() {
     setShowSettings(false)
   }
 
+  const openSettings = () => setShowSettings(true)
+
+  const openSettingsFromGame = () => {
+    setSelectedDeck(null)
+    setShowSettings(true)
+  }
+
   return (
     <>
       <TopBar
@@ -53,7 +60,7 @@ export function App() {
           <DeckSelector
             decks={DECKS}
             onSelect={setSelectedDeck}
-            onOpenSettings={() => setShowSettings(true)}
+            onOpenSettings={openSettings}
           />
         ) : (
           <MemoryGame
@@ -61,6 +68,7 @@ export function App() {
             pairCount={pairCount}
             players={playerMode === 'duo' ? playerNames : [playerNames[0]]}
             onBackToMenu={handleBackToMenu}
+            onOpenSettings={openSettingsFromGame}
           />
         )
       )}
@@ -76,11 +84,13 @@ function MemoryGame({
   pairCount,
   players,
   onBackToMenu,
+  onOpenSettings,
 }: {
   deck: DeckConfig
   pairCount: number
   players: string[]
   onBackToMenu: () => void
+  onOpenSettings: () => void
 }) {
   const config = { deck: deck.items, pairCount, players }
   const {
@@ -108,6 +118,7 @@ function MemoryGame({
           players={playerState}
           onRestart={restart}
           onBackToMenu={onBackToMenu}
+          onOpenSettings={onOpenSettings}
         />
       )}
     </main>

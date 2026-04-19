@@ -1,4 +1,5 @@
 import type { DeckConfig } from '../game/types'
+import { GameStartScreen } from '../../../platform/components/GameStartScreen'
 import styles from './DeckSelector.module.css'
 
 type Props = {
@@ -9,10 +10,11 @@ type Props = {
 
 export function DeckSelector({ decks, onSelect, onOpenSettings }: Props) {
   return (
-    <main className={styles.container}>
-      <button className={styles.gear} onClick={onOpenSettings}>⚙️</button>
-      <h1 className={styles.title}>🎮 Jogo da Memória</h1>
-      <p className={styles.subtitle}>Escolhe um tema para jogar!</p>
+    <GameStartScreen
+      title="🎮 Jogo da Memória"
+      subtitle="Escolhe um tema para jogar!"
+      onOpenSettings={onOpenSettings}
+    >
       <div className={styles.grid}>
         {decks.map((deck, i) => (
           <button
@@ -25,6 +27,6 @@ export function DeckSelector({ decks, onSelect, onOpenSettings }: Props) {
           </button>
         ))}
       </div>
-    </main>
+    </GameStartScreen>
   )
 }
