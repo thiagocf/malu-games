@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 480px;
+  max-width: min(480px, calc(100vw - 2rem));
   background: #ffffff;
   border: 1.5px solid #99f6e4;
   border-radius: 14px;

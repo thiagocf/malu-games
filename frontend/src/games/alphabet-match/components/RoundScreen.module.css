@@ -4,7 +4,7 @@
   align-items: center;
   gap: 1.25rem;
   width: 100%;
-  max-width: 480px;
+  max-width: min(480px, calc(100vw - 2rem));
 }
 
 .letterCard {
@@ -18,7 +18,7 @@
   align-items: center;
   gap: 4px;
   width: 100%;
-  max-width: 380px;
+  max-width: min(380px, calc(100vw - 2rem));
 }
 
 .letterPrompt {
@@ -42,7 +42,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   width: 100%;
-  max-width: 380px;
+  max-width: min(380px, calc(100vw - 2rem));
 }
 
 .option {
