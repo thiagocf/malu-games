@@ -1,148 +1,124 @@
 # malu-games
 
-Plataforma de jogos educativos para a Malu (4 anos). Sem propagandas, open source.
+Educational games platform for Malu (4 years old). No ads, open source.
+
+## General guidelines
+
+- Be concise and direct
+- Avoid extensive files inspection, when needed, ask for permission
+- Avoid reading complete files, try serena tools.
+- Prefer minimal diffs over full rewrites
+- Avoid unnecessary explanations
+- Ask before making broad changes
 
 ## Stack
 
-**Monorepo com npm workspaces** (`frontend/` e `api/`):
+**Monorepo with npm workspaces** (`frontend/` and `api/`):
 
 - `frontend/`: React 18 + TypeScript + Vite + Vitest + CSS Modules + Supabase Auth
 - `api/`: NestJS + Prisma (PostgreSQL) + JWT via Supabase strategy
-- Deploy frontend: GitHub Pages via GitHub Actions
+- Frontend deploy: GitHub Pages via GitHub Actions
 
-## Comandos
+## Commands
 
 ```bash
-# Da raiz (monorepo)
+# From root (monorepo)
 npm run dev:frontend      # Vite dev server — http://localhost:5173
 npm run dev:api           # NestJS watch — http://localhost:3000
 npm run build:frontend    # tsc -b && vite build
 npm run build:api         # nest build
-npm run test              # roda testes de ambos os workspaces
-npm run test:frontend     # vitest run (no workspace frontend/)
-npm run test:api          # jest (no workspace api/)
+npm run test              # runs tests for both workspaces
+npm run test:frontend     # vitest run (in frontend workspace)
+npm run test:api          # jest (in api workspace)
 
-# Dentro de frontend/
-npm run test:watch        # vitest (modo watch)
+# Inside frontend/
+npm run test:watch        # vitest (watch mode)
 npm run lint
 npm run preview
 
-# Dentro de api/
+# Inside api/
 npm run prisma:migrate    # prisma migrate dev
-npm run prisma:studio     # abre UI do banco
+npm run prisma:studio     # opens DB UI
 npm run prisma:generate   # prisma generate
 npm run test:e2e          # jest --config ./test/jest-e2e.json
 ```
 
-## Estrutura
+## Structure
 
 ```
 frontend/src/
   games/
     memory/
       game/
-        engine.ts      # funções puras: createDeck, flipCard, resolvePair, isComplete
+        engine.ts      # pure functions: createDeck, flipCard, resolvePair, isComplete
         engine.test.ts
-        useGame.ts     # hook: expõe estado + actions para a UI
-        useSounds.ts   # sons via Web Audio API
+        useGame.ts     # hook: exposes state + actions to the UI
+        useSounds.ts   # sounds via Web Audio API
         types.ts       # Animal, Card, GameState, GameConfig
       components/
-        Board.tsx / Card.tsx / GameHeader.tsx / GameOver.tsx
-        DeckSelector.tsx   # tela de seleção de deck antes do jogo
-        Settings.tsx       # configurações acessíveis durante/após jogo
+        Settings.tsx       # settings accessible during/after the game
       assets/decks/
-        decks.ts       # múltiplos decks (animais, etc.)
-    alphabet-match/
-      game/
         engine.ts / engine.test.ts / useGame.ts / useGame.test.ts
-        useSounds.ts / types.ts
-      components/
         RoundScreen.tsx / FeedbackPopup.tsx / GameHeader.tsx / GameOver.tsx
       assets/
-        animals.ts + animals/*.jpeg   # fotos reais (não emojis)
+        animals.ts + animals/*.jpeg   # real photos (not emojis)
   platform/
     components/
-      GameOverScreen.tsx    # tela de fim de jogo compartilhada entre jogos
-      GameStartScreen.tsx   # tela de início compartilhada
-      GameSelector.tsx      # seleção de jogo na home
-      TopBar.tsx            # barra superior com botão de saída
-      ExitConfirmPopup.tsx  # popup de confirmação de saída
+      GameOverScreen.tsx    # shared end-of-game screen
+      GameStartScreen.tsx   # shared start screen
+      GameSelector.tsx      # game selection on home
+      TopBar.tsx            # top bar with exit button
+      ExitConfirmPopup.tsx  # exit confirmation popup
   auth/
-    AuthContext.tsx    # contexto React de autenticação
+    AuthContext.tsx    # authentication context
     LoginButton.tsx
-    supabase.ts        # cliente Supabase
+    supabase.ts        # Supabase client
   api/
-    client.ts          # cliente HTTP para a API
+    client.ts          # HTTP client for the API
 
 api/src/
   modules/
-    auth/              # JWT guard + Supabase strategy (valida tokens Supabase)
-    users/             # CRUD de usuário (controller, service, dto)
+    auth/              # JWT guard + Supabase strategy (validates Supabase tokens)
+    users/             # user CRUD (controller, service, dto)
   prisma/              # PrismaService
   health/              # GET /health
 ```
 
-## Arquitetura
+## Architecture
 
-**Separação estrita entre lógica e UI (em cada jogo):**
+**Strict separation between logic and UI (per game):**
 
-- `engine.ts` — funções puras, sem React. Testável de forma isolada.
-- `useGame.ts` — único ponto de acesso à lógica. Gerencia delays. A UI nunca importa `engine.ts` diretamente.
-- Componentes recebem apenas dados e callbacks — sem lógica de negócio.
+- `engine.ts` — pure functions, no React. Fully testable in isolation.
+- `useGame.ts` — single entry point for logic. Handles delays. UI never imports `engine.ts` directly.
+- Components receive only data and callbacks — no business logic.
 
-**Plataforma (`platform/`):** componentes de shell compartilhados por todos os jogos. `GameOverScreen` e `GameStartScreen` são reutilizados pelos jogos; cada jogo pode ter seu próprio `GameOver.tsx` interno se precisar de customização extra.
+**Platform (`platform/`):** shared shell components across all games. `GameOverScreen` and `GameStartScreen` are reused; each game can still have its own `GameOver.tsx` if customization is needed.
 
-**Auth:** Supabase gerencia autenticação no frontend. A API valida tokens Supabase via `passport-jwt` + `SupabaseStrategy`.
+**Auth:** Supabase handles authentication on the frontend. The API validates Supabase tokens via `passport-jwt` + `SupabaseStrategy`.
 
-**Sons:** Web Audio API em `useSounds.ts`. Sem arquivos `.mp3`/`.ogg`.
+**Sounds:** Web Audio API in `useSounds.ts`. No `.mp3`/`.ogg` files.
 
-## Modelo de dados (memory)
+## Data model (memory)
 
 ```ts
-type Animal = { id: string; emoji: string; label: string }
-type Card   = { id: number; animalId: string; isFlipped: boolean; isMatched: boolean }
-type GameState = { cards: Card[]; flippedIds: number[]; moves: number; isComplete: boolean }
-type GameConfig = { deck: Animal[] }
+type Animal = { id: string; emoji: string; label: string };
+type Card = {
+  id: number;
+  animalId: string;
+  isFlipped: boolean;
+  isMatched: boolean;
+};
+type GameState = {
+  cards: Card[];
+  flippedIds: number[];
+  moves: number;
+  isComplete: boolean;
+};
+type GameConfig = { deck: Animal[] };
 ```
 
-## Variáveis de ambiente
+## Environment variables
 
 ```bash
 # frontend/.env.local
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
-VITE_API_URL=http://localhost:3000
-
-# api/.env
-DATABASE_URL=postgresql://...
-SUPABASE_JWT_SECRET=...
-PORT=3000
 ```
-
-## Visual
-
-- Paleta: lilás/roxo (`#a855f7`, `#c084fc`) e rosa (`#ec4899`, `#f0abfc`)
-- Fundo: gradiente suave lilás → rosa
-- Bordas arredondadas (16–20px), sombras suaves
-- Animação de flip: CSS puro (`transform: rotateY(180deg)`)
-- Fonte arredondada (Nunito/Fredoka One)
-
-## Regras de desenvolvimento
-
-- Não adicionar features além do que foi pedido
-- Não criar abstrações antecipadas — `shared/` dentro de `src/` não é usado
-- Testes unitários para `engine.ts` e hooks críticos; componentes simples não precisam de testes
-- Não usar bibliotecas de animação — CSS puro
-- Não usar bibliotecas de som — Web Audio API
-
-## Fora de escopo (v1)
-
-- Upload de fotos personalizadas
-- Progresso salvo por usuário
-- App mobile
-
-## Evolução planejada
-
-- v2: seleção de tema (Animais, Frutas, Cores & Formas)
-- v3: deck personalizado via upload de fotos
-- v4: React Native/Expo para iOS/Android
