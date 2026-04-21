@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { StrictMode } from 'react'
 import { useGame } from './useGame'
@@ -37,16 +37,11 @@ function renderGame(config: GameConfig) {
 }
 
 beforeEach(() => {
-  vi.useFakeTimers()
   playCorrect.mockClear()
   playWrong.mockClear()
   playVictory.mockClear()
   speakAnimalName.mockClear()
   speakAnimalError.mockClear()
-})
-
-afterEach(() => {
-  vi.useRealTimers()
 })
 
 describe('useGame — previewAnimal', () => {

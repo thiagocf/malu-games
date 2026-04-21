@@ -25,6 +25,7 @@ export function useGame(config: GameConfig) {
     if (feedback || success) return
     if (blockedIds.includes(animalId)) return
     const round = state.rounds[state.currentRoundIndex]
+    if (!round) return
     const animal = round.options.find(a => a.id === animalId)!
     setSelectedAnimalId(animalId)
     speakAnimalName(animal.label)
