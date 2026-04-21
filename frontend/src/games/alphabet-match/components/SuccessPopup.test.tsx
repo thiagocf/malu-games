@@ -17,6 +17,8 @@ describe('SuccessPopup', () => {
   })
 
   it('exibe a letra destacada no texto', () => {
+    // Fixture usa "Elefante" + letter="E" intencionalmente: ambos os spans ficam com "E",
+    // permitindo assertar que tanto a primeira letra do nome quanto a letra da rodada são destacadas.
     render(<SuccessPopup animal={animal} letter="E" onNext={() => {}} onMount={() => {}} />)
     const spans = screen.getAllByText('E', { selector: 'span' })
     expect(spans.length).toBe(2)
