@@ -1,12 +1,19 @@
+import { useEffect } from 'react'
 import type { Animal } from '../game/types'
 import styles from './FeedbackPopup.module.css'
 
 type Props = {
   animal: Animal
   onDismiss: () => void
+  onMount: () => void
 }
 
-export function FeedbackPopup({ animal, onDismiss }: Props) {
+export function FeedbackPopup({ animal, onDismiss, onMount }: Props) {
+  useEffect(() => {
+    onMount()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const firstLetter = animal.label.charAt(0)
   const rest = animal.label.slice(1)
 

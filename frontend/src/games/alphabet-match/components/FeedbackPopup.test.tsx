@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { FeedbackPopup } from './FeedbackPopup'
 import type { Animal } from '../game/types'
 
@@ -11,9 +11,21 @@ const animal: Animal = {
 }
 
 describe('FeedbackPopup', () => {
-  it('prevents native image drag (regression: image disappearing on hover)', () => {
-    render(<FeedbackPopup animal={animal} onDismiss={() => {}} />)
-    const img = screen.getByAltText('Baleia')
-    expect(img).toHaveAttribute('draggable', 'false')
+  it('impede drag nativo na imagem', () => {
+    render(<FeedbackPopup animal={animal} onDismiss={() => {}} onMount={() => {}} />)
+    expect(screen.getByAltText('Baleia')).toHaveAttribute('draggable', 'false')
+  })
+
+  it('chama onMount ao montar', () => {
+    const onMount = vi.fn()
+    render(<FeedbackPopup animal={animal} onDismiss={() => {}} onMount={onMount} />)
+    expect(onMount).toHaveBeenCalledTimes(1)
+  })
+
+  it('chama onDismiss ao clicar no botão', () => {
+    const onDismiss = vi.fn()
+    render(<FeedbackPopup animal={animal} onDismiss={onDismiss} onMount={() => {}} />)
+    fireEvent.click(screen.getByRole('button'))
+    expect(onDismiss).toHaveBeenCalledTimes(1)
   })
 })
