@@ -61,4 +61,12 @@ describe('useSounds — speakAnimalError', () => {
     expect(utterance.text).toBe('Esse é o Borboleta!')
     expect(utterance.lang).toBe('pt-BR')
   })
+
+  it('não lança erro quando speechSynthesis não está disponível', () => {
+    vi.stubGlobal('speechSynthesis', undefined)
+    const { result } = renderHook(() => useSounds())
+    expect(() => {
+      act(() => { result.current.speakAnimalError('Borboleta') })
+    }).not.toThrow()
+  })
 })
