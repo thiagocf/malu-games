@@ -19,6 +19,14 @@ function playTone(ctx: AudioContext, freq: number, type: OscillatorType, duratio
   osc.stop(ctx.currentTime + duration)
 }
 
+function speak(text: string) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return
+  window.speechSynthesis.cancel()
+  const utterance = new SpeechSynthesisUtterance(text)
+  utterance.lang = 'pt-BR'
+  window.speechSynthesis.speak(utterance)
+}
+
 export function useSounds() {
   const ctxRef = useRef<AudioContext | null>(null)
 
@@ -52,5 +60,13 @@ export function useSounds() {
     })
   }, [getCtx])
 
-  return { playCorrect, playWrong, playVictory }
+  const speakAnimalName = useCallback((label: string, letter?: string) => {
+    speak(letter ? `Isso mesmo! ${label}, com a letra ${letter}!` : label)
+  }, [])
+
+  const speakAnimalError = useCallback((label: string) => {
+    speak(`Esse é o ${label}!`)
+  }, [])
+
+  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError }
 }
