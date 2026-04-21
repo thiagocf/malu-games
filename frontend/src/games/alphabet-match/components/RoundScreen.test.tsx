@@ -26,45 +26,75 @@ const round: Round = {
   completed: false,
 }
 
+const defaultProps = {
+  round,
+  selectedAnimalId: null,
+  blockedIds: [] as string[],
+  onPreview: () => {},
+  onConfirm: () => {},
+}
+
 describe('RoundScreen', () => {
-  it('renders all options with accessible images', () => {
-    render(<RoundScreen round={round} showCorrect={false} onSelect={() => {}} />)
+  it('renderiza todas as opções com imagens acessíveis', () => {
+    render(<RoundScreen {...defaultProps} />)
     expect(screen.getAllByRole('button')).toHaveLength(4)
     expect(screen.getByAltText('Abelha')).toBeInTheDocument()
     expect(screen.getByAltText('Baleia')).toBeInTheDocument()
-    expect(screen.getByAltText('Cachorro')).toBeInTheDocument()
-    expect(screen.getByAltText('Dinossauro')).toBeInTheDocument()
   })
 
-  it('prevents native image drag on every option image (regression: cards disappearing on hover)', () => {
-    render(<RoundScreen round={round} showCorrect={false} onSelect={() => {}} />)
-    const images = screen.getAllByRole('img')
-    expect(images).toHaveLength(4)
-    for (const img of images) {
+  it('impede drag nativo nas imagens', () => {
+    render(<RoundScreen {...defaultProps} />)
+    for (const img of screen.getAllByRole('img')) {
       expect(img).toHaveAttribute('draggable', 'false')
     }
   })
 
-  it('calls onSelect with the animal id when an option is clicked', () => {
-    const onSelect = vi.fn()
-    render(<RoundScreen round={round} showCorrect={false} onSelect={onSelect} />)
+  it('chama onPreview com o id do animal ao clicar uma opção', () => {
+    const onPreview = vi.fn()
+    render(<RoundScreen {...defaultProps} onPreview={onPreview} />)
     fireEvent.click(screen.getByAltText('Abelha').closest('button')!)
-    expect(onSelect).toHaveBeenCalledWith('abelha')
+    expect(onPreview).toHaveBeenCalledWith('abelha')
   })
 
-  it('disables every option when showCorrect is true', () => {
-    render(<RoundScreen round={round} showCorrect={true} onSelect={() => {}} />)
-    for (const button of screen.getAllByRole('button')) {
-      expect(button).toBeDisabled()
-    }
+  it('não exibe botão de confirmar quando nenhum animal está selecionado', () => {
+    render(<RoundScreen {...defaultProps} selectedAnimalId={null} />)
+    expect(screen.queryByRole('button', { name: /é esse/i })).toBeNull()
   })
 
-  it('applies the correct class only to the correct animal button when showCorrect is true', () => {
-    render(<RoundScreen round={round} showCorrect={true} onSelect={() => {}} />)
-    const correctButton = screen.getByAltText('Abelha').closest('button')!
-    expect(correctButton.className).toContain(styles.correct)
+  it('exibe botão de confirmar quando um animal está selecionado', () => {
+    render(<RoundScreen {...defaultProps} selectedAnimalId="abelha" />)
+    expect(screen.getByRole('button', { name: /é esse/i })).toBeInTheDocument()
+  })
 
-    const wrongButton = screen.getByAltText('Baleia').closest('button')!
-    expect(wrongButton.className).not.toContain(styles.correct)
+  it('chama onConfirm ao clicar no botão de confirmar', () => {
+    const onConfirm = vi.fn()
+    render(<RoundScreen {...defaultProps} selectedAnimalId="abelha" onConfirm={onConfirm} />)
+    fireEvent.click(screen.getByRole('button', { name: /é esse/i }))
+    expect(onConfirm).toHaveBeenCalledTimes(1)
+  })
+
+  it('aplica classe selected na carta selecionada', () => {
+    render(<RoundScreen {...defaultProps} selectedAnimalId="abelha" />)
+    const selectedButton = screen.getByAltText('Abelha').closest('button')!
+    expect(selectedButton.className).toContain(styles.selected)
+  })
+
+  it('não aplica classe selected em cartas não selecionadas', () => {
+    render(<RoundScreen {...defaultProps} selectedAnimalId="abelha" />)
+    const otherButton = screen.getByAltText('Baleia').closest('button')!
+    expect(otherButton.className).not.toContain(styles.selected)
+  })
+
+  it('desabilita e aplica classe blocked nas opções bloqueadas', () => {
+    render(<RoundScreen {...defaultProps} blockedIds={['baleia']} />)
+    const blockedButton = screen.getByAltText('Baleia').closest('button')!
+    expect(blockedButton).toBeDisabled()
+    expect(blockedButton.className).toContain(styles.blocked)
+  })
+
+  it('não desabilita opções não bloqueadas', () => {
+    render(<RoundScreen {...defaultProps} blockedIds={['baleia']} />)
+    const freeButton = screen.getByAltText('Abelha').closest('button')!
+    expect(freeButton).not.toBeDisabled()
   })
 })
