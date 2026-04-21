@@ -59,7 +59,8 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  will-change: transform;
+  min-width: 0;
+  min-height: 0;
 }
 
 .option:hover:not(:disabled) {
