@@ -7,9 +7,11 @@ import type { Animal, GameConfig } from './types'
 const playCorrect = vi.fn()
 const playWrong = vi.fn()
 const playVictory = vi.fn()
+const speakAnimalName = vi.fn()
+const speakAnimalError = vi.fn()
 
 vi.mock('./useSounds', () => ({
-  useSounds: () => ({ playCorrect, playWrong, playVictory }),
+  useSounds: () => ({ playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError }),
 }))
 
 const makeAnimal = (id: string, firstLetter: string): Animal => ({
@@ -39,119 +41,257 @@ beforeEach(() => {
   playCorrect.mockClear()
   playWrong.mockClear()
   playVictory.mockClear()
+  speakAnimalName.mockClear()
+  speakAnimalError.mockClear()
 })
 
 afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('useGame — StrictMode regression', () => {
-  it('advances exactly one round per correct answer (not two under StrictMode)', () => {
+describe('useGame — previewAnimal', () => {
+  it('define selectedAnimalId ao chamar previewAnimal', () => {
     const { result } = renderGame({ totalRounds: 3, animals })
+    const animalId = result.current.currentRound!.options[0].id
 
-    const firstRound = result.current.currentRound!
-    const correctId = firstRound.correctAnimal.id
+    act(() => { result.current.previewAnimal(animalId) })
 
-    act(() => {
-      result.current.selectAnimal(correctId)
-    })
+    expect(result.current.selectedAnimalId).toBe(animalId)
+  })
 
-    expect(result.current.showCorrect).toBe(true)
-    expect(result.current.state.currentRoundIndex).toBe(0)
+  it('chama speakAnimalName com o label do animal selecionado', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const animal = result.current.currentRound!.options[0]
 
-    act(() => {
-      vi.advanceTimersByTime(1500)
-    })
+    act(() => { result.current.previewAnimal(animal.id) })
 
-    expect(result.current.state.currentRoundIndex).toBe(1)
-    expect(result.current.showCorrect).toBe(false)
+    expect(speakAnimalName).toHaveBeenCalledWith(animal.label)
+  })
+
+  it('troca a seleção ao chamar previewAnimal em outro animal', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const [first, second] = result.current.currentRound!.options
+
+    act(() => { result.current.previewAnimal(first.id) })
+    act(() => { result.current.previewAnimal(second.id) })
+
+    expect(result.current.selectedAnimalId).toBe(second.id)
+    expect(speakAnimalName).toHaveBeenCalledTimes(2)
+  })
+
+  it('não faz nada se o animal está em blockedIds', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrongAnimal = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrongAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+    act(() => { result.current.dismissFeedback() })
+
+    speakAnimalName.mockClear()
+    act(() => { result.current.previewAnimal(wrongAnimal.id) })
+
+    expect(result.current.selectedAnimalId).toBeNull()
+    expect(speakAnimalName).not.toHaveBeenCalled()
+  })
+})
+
+describe('useGame — confirmAnimal (acerto)', () => {
+  it('define success com o animal e a letra ao acertar', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(result.current.success).not.toBeNull()
+    expect(result.current.success!.animal.id).toBe(round.correctAnimal.id)
+    expect(result.current.success!.letter).toBe(round.letter)
+  })
+
+  it('limpa selectedAnimalId após acerto', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(result.current.selectedAnimalId).toBeNull()
+  })
+
+  it('chama playCorrect ao acertar', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
     expect(playCorrect).toHaveBeenCalledTimes(1)
   })
 
-  it('records exactly one attempt per wrong answer', () => {
+  it('registra exatamente uma tentativa ao acertar', () => {
     const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
 
-    const firstRound = result.current.currentRound!
-    const wrong = firstRound.options.find(a => a.id !== firstRound.correctAnimal.id)!
-
-    act(() => {
-      result.current.selectAnimal(wrong.id)
-    })
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
 
     expect(result.current.state.totalAttempts).toBe(1)
-    expect(result.current.feedback).not.toBeNull()
-    expect(result.current.feedback?.animal.id).toBe(wrong.id)
-    expect(playWrong).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('useGame — dismissSuccess', () => {
+  it('avança para a próxima rodada ao chamar dismissSuccess', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+    act(() => { result.current.dismissSuccess() })
+
+    expect(result.current.state.currentRoundIndex).toBe(1)
+    expect(result.current.success).toBeNull()
   })
 
-  it('completes the game without overshooting currentRoundIndex', () => {
+  it('reseta blockedIds ao avançar de rodada', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+    act(() => { result.current.dismissFeedback() })
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+    act(() => { result.current.dismissSuccess() })
+
+    expect(result.current.blockedIds).toEqual([])
+  })
+
+  it('completa o jogo após a última rodada', () => {
     const totalRounds = 3
     const { result } = renderGame({ totalRounds, animals })
 
     for (let i = 0; i < totalRounds; i++) {
       const round = result.current.currentRound!
-      act(() => {
-        result.current.selectAnimal(round.correctAnimal.id)
-      })
-      act(() => {
-        vi.advanceTimersByTime(1500)
-      })
+      act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+      act(() => { result.current.confirmAnimal() })
+      act(() => { result.current.dismissSuccess() })
     }
 
     expect(result.current.state.isComplete).toBe(true)
-    expect(result.current.state.currentRoundIndex).toBe(totalRounds)
-    expect(result.current.currentRound).toBeNull()
   })
 
-  it('plays victory sound exactly once when the game completes', () => {
+  it('toca vitória exatamente uma vez ao completar o jogo', () => {
     const totalRounds = 2
     const { result } = renderGame({ totalRounds, animals })
 
     for (let i = 0; i < totalRounds; i++) {
       const round = result.current.currentRound!
-      act(() => {
-        result.current.selectAnimal(round.correctAnimal.id)
-      })
-      act(() => {
-        vi.advanceTimersByTime(1500)
-      })
+      act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+      act(() => { result.current.confirmAnimal() })
+      act(() => { result.current.dismissSuccess() })
     }
 
     expect(playVictory).toHaveBeenCalledTimes(1)
   })
+})
 
-  it('ignores clicks while showCorrect is pending', () => {
-    const { result } = renderGame({ totalRounds: 3, animals })
-    const round = result.current.currentRound!
-
-    act(() => {
-      result.current.selectAnimal(round.correctAnimal.id)
-    })
-
-    const otherId = round.options.find(a => a.id !== round.correctAnimal.id)!.id
-
-    act(() => {
-      result.current.selectAnimal(otherId)
-    })
-
-    expect(result.current.state.totalAttempts).toBe(1)
-    expect(playWrong).not.toHaveBeenCalled()
-  })
-
-  it('ignores clicks while feedback is shown', () => {
+describe('useGame — confirmAnimal (erro)', () => {
+  it('define feedback com o animal errado', () => {
     const { result } = renderGame({ totalRounds: 3, animals })
     const round = result.current.currentRound!
     const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
 
-    act(() => {
-      result.current.selectAnimal(wrong.id)
-    })
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
 
-    act(() => {
-      result.current.selectAnimal(round.correctAnimal.id)
-    })
+    expect(result.current.feedback).not.toBeNull()
+    expect(result.current.feedback!.animal.id).toBe(wrong.id)
+  })
+
+  it('adiciona o animal errado ao blockedIds', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(result.current.blockedIds).toContain(wrong.id)
+  })
+
+  it('chama playWrong ao errar', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(playWrong).toHaveBeenCalledTimes(1)
+  })
+
+  it('limpa selectedAnimalId após erro', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(result.current.selectedAnimalId).toBeNull()
+  })
+
+  it('registra uma tentativa ao errar', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
 
     expect(result.current.state.totalAttempts).toBe(1)
-    expect(playCorrect).not.toHaveBeenCalled()
+  })
+})
+
+describe('useGame — guards', () => {
+  it('confirmAnimal não faz nada se não há selectedAnimalId', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+
+    act(() => { result.current.confirmAnimal() })
+
+    expect(result.current.feedback).toBeNull()
+    expect(result.current.success).toBeNull()
+    expect(result.current.state.totalAttempts).toBe(0)
+  })
+
+  it('previewAnimal não faz nada enquanto success está aberto', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    speakAnimalName.mockClear()
+    const other = round.options.find(a => a.id !== round.correctAnimal.id)!
+    act(() => { result.current.previewAnimal(other.id) })
+
+    expect(speakAnimalName).not.toHaveBeenCalled()
+  })
+
+  it('previewAnimal não faz nada enquanto feedback está aberto', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    speakAnimalName.mockClear()
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+
+    expect(speakAnimalName).not.toHaveBeenCalled()
   })
 })

@@ -4,13 +4,16 @@ import type { Animal, GameConfig, GameState } from './types'
 import { useSounds } from './useSounds'
 
 type FeedbackState = { animal: Animal } | null
+type SuccessState = { animal: Animal; letter: string } | null
 
 export function useGame(config: GameConfig) {
   const [state, setState] = useState<GameState>(() => createGame(config))
   const [feedback, setFeedback] = useState<FeedbackState>(null)
-  const [showCorrect, setShowCorrect] = useState(false)
+  const [success, setSuccess] = useState<SuccessState>(null)
+  const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null)
+  const [blockedIds, setBlockedIds] = useState<string[]>([])
 
-  const { playCorrect, playWrong, playVictory } = useSounds()
+  const { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError } = useSounds()
 
   const currentRound = state.rounds[state.currentRoundIndex] ?? null
 
@@ -18,36 +21,74 @@ export function useGame(config: GameConfig) {
     if (state.isComplete) playVictory()
   }, [state.isComplete, playVictory])
 
-  const selectAnimal = useCallback((animalId: string) => {
-    if (feedback || showCorrect) return
+  const previewAnimal = useCallback((animalId: string) => {
+    if (feedback || success) return
+    if (blockedIds.includes(animalId)) return
+    const round = state.rounds[state.currentRoundIndex]
+    const animal = round.options.find(a => a.id === animalId)!
+    setSelectedAnimalId(animalId)
+    speakAnimalName(animal.label)
+  }, [state, feedback, success, blockedIds, speakAnimalName])
 
-    const result = checkAnswer(state, animalId)
+  const confirmAnimal = useCallback(() => {
+    if (!selectedAnimalId || feedback || success) return
+
+    const result = checkAnswer(state, selectedAnimalId)
+    const round = state.rounds[state.currentRoundIndex]
 
     if (result.correct) {
       playCorrect()
-      setShowCorrect(true)
       setState(prev => completeRound(recordAttempt(prev)))
-
-      setTimeout(() => {
-        setShowCorrect(false)
-        setState(prev => advanceRound(prev))
-      }, 1500)
+      setSuccess({ animal: result.selectedAnimal, letter: round.letter })
+      setSelectedAnimalId(null)
     } else {
       playWrong()
-      setFeedback({ animal: result.selectedAnimal })
       setState(prev => recordAttempt(prev))
+      setFeedback({ animal: result.selectedAnimal })
+      setBlockedIds(prev => [...prev, selectedAnimalId])
+      setSelectedAnimalId(null)
     }
-  }, [state, feedback, showCorrect, playCorrect, playWrong])
+  }, [selectedAnimalId, state, feedback, success, playCorrect, playWrong])
 
   const dismissFeedback = useCallback(() => {
     setFeedback(null)
   }, [])
 
+  const dismissSuccess = useCallback(() => {
+    setSuccess(null)
+    setBlockedIds([])
+    setState(prev => advanceRound(prev))
+  }, [])
+
+  const onFeedbackMount = useCallback(() => {
+    if (feedback) speakAnimalError(feedback.animal.label)
+  }, [feedback, speakAnimalError])
+
+  const onSuccessMount = useCallback(() => {
+    if (success) speakAnimalName(success.animal.label, success.letter)
+  }, [success, speakAnimalName])
+
   const restart = useCallback(() => {
     setState(createGame(config))
     setFeedback(null)
-    setShowCorrect(false)
+    setSuccess(null)
+    setSelectedAnimalId(null)
+    setBlockedIds([])
   }, [config])
 
-  return { state, currentRound, feedback, showCorrect, selectAnimal, dismissFeedback, restart }
+  return {
+    state,
+    currentRound,
+    feedback,
+    success,
+    selectedAnimalId,
+    blockedIds,
+    previewAnimal,
+    confirmAnimal,
+    dismissFeedback,
+    dismissSuccess,
+    onFeedbackMount,
+    onSuccessMount,
+    restart,
+  }
 }
