@@ -2,6 +2,7 @@ import { useGame } from './game/useGame'
 import { GameHeader } from './components/GameHeader'
 import { RoundScreen } from './components/RoundScreen'
 import { FeedbackPopup } from './components/FeedbackPopup'
+import { SuccessPopup } from './components/SuccessPopup'
 import { GameOver } from './components/GameOver'
 import { ANIMALS } from './assets/animals'
 import type { GameConfig } from './game/types'
@@ -20,9 +21,15 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
     state,
     currentRound,
     feedback,
-    showCorrect,
-    selectAnimal,
+    success,
+    selectedAnimalId,
+    blockedIds,
+    previewAnimal,
+    confirmAnimal,
     dismissFeedback,
+    dismissSuccess,
+    onFeedbackMount,
+    onSuccessMount,
     restart,
   } = useGame(config)
 
@@ -47,13 +54,24 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
       />
       <RoundScreen
         round={currentRound}
-        showCorrect={showCorrect}
-        onSelect={selectAnimal}
+        selectedAnimalId={selectedAnimalId}
+        blockedIds={blockedIds}
+        onPreview={previewAnimal}
+        onConfirm={confirmAnimal}
       />
       {feedback && (
         <FeedbackPopup
           animal={feedback.animal}
           onDismiss={dismissFeedback}
+          onMount={onFeedbackMount}
+        />
+      )}
+      {success && (
+        <SuccessPopup
+          animal={success.animal}
+          letter={success.letter}
+          onNext={dismissSuccess}
+          onMount={onSuccessMount}
         />
       )}
     </main>
