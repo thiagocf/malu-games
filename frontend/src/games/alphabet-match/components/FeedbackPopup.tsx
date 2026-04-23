@@ -1,21 +1,16 @@
-import { useEffect } from 'react'
 import type { Animal } from '../game/types'
 import styles from './FeedbackPopup.module.css'
 
 type Props = {
   animal: Animal
   onDismiss: () => void
-  onMount: () => void
 }
 
-export function FeedbackPopup({ animal, onDismiss, onMount }: Props) {
-  useEffect(() => {
-    onMount()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+export function FeedbackPopup({ animal, onDismiss }: Props) {
 
   const firstLetter = animal.label.charAt(0)
   const rest = animal.label.slice(1)
+  const article = animal.gender === 'F' ? 'Essa é a' : 'Esse é o'
 
   return (
     <div className={styles.overlay}>
@@ -28,7 +23,7 @@ export function FeedbackPopup({ animal, onDismiss, onMount }: Props) {
           onDragStart={(e) => e.preventDefault()}
         />
         <p className={styles.text}>
-          Esse é o <span className={styles.highlight}>{firstLetter}</span>{rest}!
+          {article} <span className={styles.highlight}>{firstLetter}</span>{rest}!
         </p>
         <button className={styles.button} onClick={onDismiss}>
           🔄 Tentar novamente

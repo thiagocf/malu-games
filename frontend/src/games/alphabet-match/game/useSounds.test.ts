@@ -19,7 +19,12 @@ beforeEach(() => {
     }
   } as any
 
-  vi.stubGlobal('speechSynthesis', { speak: mockSpeak, cancel: mockCancel })
+  vi.stubGlobal('speechSynthesis', {
+    speak: mockSpeak,
+    cancel: mockCancel,
+    getVoices: () => [{ lang: 'pt-BR', name: 'Portuguese Brazil' }],
+    addEventListener: () => {},
+  })
 })
 
 describe('useSounds — speakAnimalName', () => {
@@ -52,13 +57,23 @@ describe('useSounds — speakAnimalName', () => {
 })
 
 describe('useSounds — speakAnimalError', () => {
-  it('fala a frase de erro com o nome do animal', () => {
+  it('fala a frase de erro com artigo masculino', () => {
     const { result } = renderHook(() => useSounds())
-    act(() => { result.current.speakAnimalError('Borboleta') })
+    act(() => { result.current.speakAnimalError('Cachorro', 'M') })
 
     expect(mockCancel).toHaveBeenCalledTimes(1)
     const utterance: SpeechSynthesisUtterance = mockSpeak.mock.calls[0][0]
-    expect(utterance.text).toBe('Esse é o Borboleta!')
+    expect(utterance.text).toBe('Esse é o Cachorro!')
+    expect(utterance.lang).toBe('pt-BR')
+  })
+
+  it('fala a frase de erro com artigo feminino', () => {
+    const { result } = renderHook(() => useSounds())
+    act(() => { result.current.speakAnimalError('Onça', 'F') })
+
+    expect(mockCancel).toHaveBeenCalledTimes(1)
+    const utterance: SpeechSynthesisUtterance = mockSpeak.mock.calls[0][0]
+    expect(utterance.text).toBe('Essa é a Onça!')
     expect(utterance.lang).toBe('pt-BR')
   })
 
@@ -66,7 +81,7 @@ describe('useSounds — speakAnimalError', () => {
     vi.stubGlobal('speechSynthesis', undefined)
     const { result } = renderHook(() => useSounds())
     expect(() => {
-      act(() => { result.current.speakAnimalError('Borboleta') })
+      act(() => { result.current.speakAnimalError('Onça', 'F') })
     }).not.toThrow()
   })
 })

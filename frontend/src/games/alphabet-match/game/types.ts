@@ -3,6 +3,7 @@ export type Animal = {
   label: string
   imagePath: string
   firstLetter: string
+  gender: 'M' | 'F'
 }
 
 export type Round = {

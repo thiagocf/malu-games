@@ -8,23 +8,18 @@ const animal: Animal = {
   label: 'Baleia',
   imagePath: '/fake/baleia.jpeg',
   firstLetter: 'B',
+  gender: 'F',
 }
 
 describe('FeedbackPopup', () => {
   it('impede drag nativo na imagem', () => {
-    render(<FeedbackPopup animal={animal} onDismiss={() => {}} onMount={() => {}} />)
+    render(<FeedbackPopup animal={animal} onDismiss={() => {}} />)
     expect(screen.getByAltText('Baleia')).toHaveAttribute('draggable', 'false')
-  })
-
-  it('chama onMount ao montar', () => {
-    const onMount = vi.fn()
-    render(<FeedbackPopup animal={animal} onDismiss={() => {}} onMount={onMount} />)
-    expect(onMount).toHaveBeenCalledTimes(1)
   })
 
   it('chama onDismiss ao clicar no botão', () => {
     const onDismiss = vi.fn()
-    render(<FeedbackPopup animal={animal} onDismiss={onDismiss} onMount={() => {}} />)
+    render(<FeedbackPopup animal={animal} onDismiss={onDismiss} />)
     fireEvent.click(screen.getByRole('button'))
     expect(onDismiss).toHaveBeenCalledTimes(1)
   })

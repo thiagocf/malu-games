@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import type { Animal } from '../game/types'
 import styles from './SuccessPopup.module.css'
 
@@ -6,14 +5,9 @@ type Props = {
   animal: Animal
   letter: string
   onNext: () => void
-  onMount: () => void
 }
 
-export function SuccessPopup({ animal, letter, onNext, onMount }: Props) {
-  useEffect(() => {
-    onMount()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+export function SuccessPopup({ animal, letter, onNext }: Props) {
 
   const firstLetter = animal.label.charAt(0)
   const rest = animal.label.slice(1)

@@ -21,42 +21,63 @@ function playTone(ctx: AudioContext, freq: number, type: OscillatorType, duratio
 
 function speak(text: string) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return
-  window.speechSynthesis.cancel()
+  const synth = window.speechSynthesis
+  synth.cancel()
+
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'pt-BR'
-  window.speechSynthesis.speak(utterance)
+
+  const doSpeak = () => {
+    const voices = synth.getVoices()
+    const ptBR = voices.find(v => v.lang === 'pt-BR') ?? voices.find(v => v.lang.startsWith('pt'))
+    if (ptBR) utterance.voice = ptBR
+    synth.speak(utterance)
+  }
+
+  if (synth.getVoices().length === 0) {
+    synth.addEventListener('voiceschanged', doSpeak, { once: true })
+  } else {
+    doSpeak()
+  }
 }
 
 export function useSounds() {
   const ctxRef = useRef<AudioContext | null>(null)
 
-  const getCtx = useCallback(() => {
+  const getCtx = useCallback(async () => {
     if (!ctxRef.current) {
       ctxRef.current = createAudioContext()
     }
-    return ctxRef.current
+    const ctx = ctxRef.current
+    if (ctx && ctx.state === 'suspended') {
+      await ctx.resume()
+    }
+    return ctx
   }, [])
 
   const playCorrect = useCallback(() => {
-    const ctx = getCtx()
-    if (!ctx) return
-    playTone(ctx, 523, 'sine', 0.2, 0.2)
-    setTimeout(() => playTone(ctx, 659, 'sine', 0.2, 0.22), 100)
-    setTimeout(() => playTone(ctx, 784, 'sine', 0.3, 0.24), 200)
+    getCtx().then(ctx => {
+      if (!ctx) return
+      playTone(ctx, 523, 'sine', 0.2, 0.2)
+      setTimeout(() => playTone(ctx, 659, 'sine', 0.2, 0.22), 100)
+      setTimeout(() => playTone(ctx, 784, 'sine', 0.3, 0.24), 200)
+    })
   }, [getCtx])
 
   const playWrong = useCallback(() => {
-    const ctx = getCtx()
-    if (!ctx) return
-    playTone(ctx, 330, 'sine', 0.25, 0.12)
+    getCtx().then(ctx => {
+      if (!ctx) return
+      playTone(ctx, 330, 'sine', 0.25, 0.12)
+    })
   }, [getCtx])
 
   const playVictory = useCallback(() => {
-    const ctx = getCtx()
-    if (!ctx) return
-    const notes = [523, 659, 784, 1047]
-    notes.forEach((freq, i) => {
-      setTimeout(() => playTone(ctx, freq, 'sine', 0.35, 0.25), i * 120)
+    getCtx().then(ctx => {
+      if (!ctx) return
+      const notes = [523, 659, 784, 1047]
+      notes.forEach((freq, i) => {
+        setTimeout(() => playTone(ctx, freq, 'sine', 0.35, 0.25), i * 120)
+      })
     })
   }, [getCtx])
 
@@ -64,8 +85,9 @@ export function useSounds() {
     speak(letter ? `Isso mesmo! ${label}, com a letra ${letter}!` : label)
   }, [])
 
-  const speakAnimalError = useCallback((label: string) => {
-    speak(`Esse é o ${label}!`)
+  const speakAnimalError = useCallback((label: string, gender: 'M' | 'F') => {
+    const prefix = gender === 'F' ? 'Essa é a' : 'Esse é o'
+    speak(`${prefix} ${label}!`)
   }, [])
 
   return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError }

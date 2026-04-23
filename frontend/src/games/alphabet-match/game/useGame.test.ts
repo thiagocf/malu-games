@@ -19,6 +19,7 @@ const makeAnimal = (id: string, firstLetter: string): Animal => ({
   label: id.charAt(0).toUpperCase() + id.slice(1),
   imagePath: `/fake/${id}.jpeg`,
   firstLetter,
+  gender: 'M',
 })
 
 const animals: Animal[] = [

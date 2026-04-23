@@ -39,17 +39,19 @@ export function useGame(config: GameConfig) {
 
     if (result.correct) {
       playCorrect()
+      speakAnimalName(result.selectedAnimal.label, round.letter)
       setState(prev => completeRound(recordAttempt(prev)))
       setSuccess({ animal: result.selectedAnimal, letter: round.letter })
       setSelectedAnimalId(null)
     } else {
       playWrong()
+      speakAnimalError(result.selectedAnimal.label, result.selectedAnimal.gender)
       setState(prev => recordAttempt(prev))
       setFeedback({ animal: result.selectedAnimal })
       setBlockedIds(prev => [...prev, selectedAnimalId])
       setSelectedAnimalId(null)
     }
-  }, [selectedAnimalId, state, feedback, success, playCorrect, playWrong])
+  }, [selectedAnimalId, state, feedback, success, playCorrect, playWrong, speakAnimalName, speakAnimalError])
 
   const dismissFeedback = useCallback(() => {
     setFeedback(null)
@@ -60,14 +62,6 @@ export function useGame(config: GameConfig) {
     setBlockedIds([])
     setState(prev => advanceRound(prev))
   }, [])
-
-  const onFeedbackMount = useCallback(() => {
-    if (feedback) speakAnimalError(feedback.animal.label)
-  }, [feedback, speakAnimalError])
-
-  const onSuccessMount = useCallback(() => {
-    if (success) speakAnimalName(success.animal.label, success.letter)
-  }, [success, speakAnimalName])
 
   const restart = useCallback(() => {
     setState(createGame(config))
@@ -88,8 +82,6 @@ export function useGame(config: GameConfig) {
     confirmAnimal,
     dismissFeedback,
     dismissSuccess,
-    onFeedbackMount,
-    onSuccessMount,
     restart,
   }
 }

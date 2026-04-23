@@ -28,8 +28,6 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
     confirmAnimal,
     dismissFeedback,
     dismissSuccess,
-    onFeedbackMount,
-    onSuccessMount,
     restart,
   } = useGame(config)
 
@@ -63,7 +61,6 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
         <FeedbackPopup
           animal={feedback.animal}
           onDismiss={dismissFeedback}
-          onMount={onFeedbackMount}
         />
       )}
       {success && (
@@ -71,7 +68,6 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
           animal={success.animal}
           letter={success.letter}
           onNext={dismissSuccess}
-          onMount={onSuccessMount}
         />
       )}
     </main>
