@@ -9,6 +9,7 @@ const makeAnimal = (id: string, label: string): Animal => ({
   label,
   imagePath: `/fake/${id}.jpeg`,
   firstLetter: label.charAt(0),
+  gender: 'M',
 })
 
 const correctAnimal = makeAnimal('abelha', 'Abelha')

@@ -14,6 +14,7 @@ const makeAnimal = (id: string, label: string, firstLetter: string): Animal => (
   label,
   imagePath: `/fake/${id}.jpeg`,
   firstLetter,
+  gender: 'M',
 })
 
 const sampleAnimals: Animal[] = [
