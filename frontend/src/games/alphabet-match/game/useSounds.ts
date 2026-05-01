@@ -90,5 +90,13 @@ export function useSounds() {
     speak(`${prefix} ${label}!`)
   }, [])
 
-  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError }
+  const speakRoundIntro = useCallback((letter: string) => {
+    speak(`Qual animal começa com a letra ${letter}?`)
+  }, [])
+
+  const speakLetter = useCallback((letter: string) => {
+    speak(`Letra ${letter}`)
+  }, [])
+
+  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakRoundIntro, speakLetter }
 }

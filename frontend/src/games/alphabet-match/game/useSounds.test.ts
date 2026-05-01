@@ -85,3 +85,45 @@ describe('useSounds — speakAnimalError', () => {
     }).not.toThrow()
   })
 })
+
+describe('useSounds — speakRoundIntro', () => {
+  it('fala a frase de introdução com a letra da rodada', () => {
+    const { result } = renderHook(() => useSounds())
+    act(() => { result.current.speakRoundIntro('B') })
+
+    expect(mockCancel).toHaveBeenCalledTimes(1)
+    expect(mockSpeak).toHaveBeenCalledTimes(1)
+    const utterance: SpeechSynthesisUtterance = mockSpeak.mock.calls[0][0]
+    expect(utterance.text).toBe('Qual animal começa com a letra B?')
+    expect(utterance.lang).toBe('pt-BR')
+  })
+
+  it('não lança erro quando speechSynthesis não está disponível', () => {
+    vi.stubGlobal('speechSynthesis', undefined)
+    const { result } = renderHook(() => useSounds())
+    expect(() => {
+      act(() => { result.current.speakRoundIntro('A') })
+    }).not.toThrow()
+  })
+})
+
+describe('useSounds — speakLetter', () => {
+  it('fala apenas o nome da letra', () => {
+    const { result } = renderHook(() => useSounds())
+    act(() => { result.current.speakLetter('C') })
+
+    expect(mockCancel).toHaveBeenCalledTimes(1)
+    expect(mockSpeak).toHaveBeenCalledTimes(1)
+    const utterance: SpeechSynthesisUtterance = mockSpeak.mock.calls[0][0]
+    expect(utterance.text).toBe('Letra C')
+    expect(utterance.lang).toBe('pt-BR')
+  })
+
+  it('não lança erro quando speechSynthesis não está disponível', () => {
+    vi.stubGlobal('speechSynthesis', undefined)
+    const { result } = renderHook(() => useSounds())
+    expect(() => {
+      act(() => { result.current.speakLetter('A') })
+    }).not.toThrow()
+  })
+})
