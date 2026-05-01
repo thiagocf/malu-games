@@ -29,6 +29,7 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
     dismissFeedback,
     dismissSuccess,
     restart,
+    speakLetterReplay,
   } = useGame(config)
 
   if (state.isComplete) {
@@ -56,6 +57,7 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
         blockedIds={blockedIds}
         onPreview={previewAnimal}
         onConfirm={confirmAnimal}
+        onLetterTap={speakLetterReplay}
       />
       {feedback && (
         <FeedbackPopup
