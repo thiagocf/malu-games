@@ -19,6 +19,14 @@
   gap: 4px;
   width: 100%;
   max-width: 380px;
+  cursor: pointer;
+  font-family: inherit;
+  animation: letterBounce 2.4s ease-in-out infinite;
+}
+
+.letterCard:active {
+  transform: scale(0.97);
+  animation: none;
 }
 
 .letterPrompt {
@@ -89,6 +97,11 @@
   0%   { transform: scale(1); }
   60%  { transform: scale(1.04); }
   100% { transform: scale(1); }
+}
+
+@keyframes letterBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
 }
 
 .image {
