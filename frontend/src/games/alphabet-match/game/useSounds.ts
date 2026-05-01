@@ -19,15 +19,23 @@ function playTone(ctx: AudioContext, freq: number, type: OscillatorType, duratio
   osc.stop(ctx.currentTime + duration)
 }
 
+let pendingVoicesCallback: (() => void) | null = null
+
 function speak(text: string) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return
   const synth = window.speechSynthesis
   synth.cancel()
 
+  if (pendingVoicesCallback) {
+    synth.removeEventListener('voiceschanged', pendingVoicesCallback)
+    pendingVoicesCallback = null
+  }
+
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'pt-BR'
 
   const doSpeak = () => {
+    pendingVoicesCallback = null
     const voices = synth.getVoices()
     const ptBR = voices.find(v => v.lang === 'pt-BR') ?? voices.find(v => v.lang.startsWith('pt'))
     if (ptBR) utterance.voice = ptBR
@@ -35,6 +43,7 @@ function speak(text: string) {
   }
 
   if (synth.getVoices().length === 0) {
+    pendingVoicesCallback = doSpeak
     synth.addEventListener('voiceschanged', doSpeak, { once: true })
   } else {
     doSpeak()
