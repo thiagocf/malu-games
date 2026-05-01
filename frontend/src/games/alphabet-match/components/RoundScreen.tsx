@@ -7,14 +7,20 @@ type Props = {
   blockedIds: string[]
   onPreview: (animalId: string) => void
   onConfirm: () => void
+  onLetterTap: () => void
 }
 
-export function RoundScreen({ round, selectedAnimalId, blockedIds, onPreview, onConfirm }: Props) {
+export function RoundScreen({ round, selectedAnimalId, blockedIds, onPreview, onConfirm, onLetterTap }: Props) {
   return (
     <div className={styles.container}>
-      <div className={styles.letterCard}>
+      <button
+        type="button"
+        className={styles.letterCard}
+        onClick={onLetterTap}
+        aria-label={`Letra ${round.letter}`}
+      >
         <span className={styles.letter}>{round.letter}</span>
-      </div>
+      </button>
       <div className={styles.grid}>
         {round.options.map(animal => {
           const isSelected = animal.id === selectedAnimalId

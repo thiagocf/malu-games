@@ -33,12 +33,13 @@ const defaultProps = {
   blockedIds: [] as string[],
   onPreview: () => {},
   onConfirm: () => {},
+  onLetterTap: () => {},
 }
 
 describe('RoundScreen', () => {
   it('renderiza todas as opções com imagens acessíveis', () => {
     render(<RoundScreen {...defaultProps} />)
-    expect(screen.getAllByRole('button')).toHaveLength(4)
+    expect(screen.getAllByRole('button')).toHaveLength(5)
     expect(screen.getByAltText('Abelha')).toBeInTheDocument()
     expect(screen.getByAltText('Baleia')).toBeInTheDocument()
   })
@@ -97,5 +98,12 @@ describe('RoundScreen', () => {
     render(<RoundScreen {...defaultProps} blockedIds={['baleia']} />)
     const freeButton = screen.getByAltText('Abelha').closest('button')!
     expect(freeButton).not.toBeDisabled()
+  })
+
+  it('chama onLetterTap ao clicar no card da letra', () => {
+    const onLetterTap = vi.fn()
+    render(<RoundScreen {...defaultProps} onLetterTap={onLetterTap} />)
+    fireEvent.click(screen.getByRole('button', { name: /letra a/i }))
+    expect(onLetterTap).toHaveBeenCalledTimes(1)
   })
 })
