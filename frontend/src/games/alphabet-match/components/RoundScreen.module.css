@@ -25,8 +25,8 @@
 }
 
 .letterCard:active {
+  animation-play-state: paused;
   transform: scale(0.97);
-  animation: none;
 }
 
 .letterPrompt {
