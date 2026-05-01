@@ -23,6 +23,7 @@ const round: Round = {
   letter: 'A',
   correctAnimal,
   options: [correctAnimal, ...distractors],
+  letterOptions: ['A', 'B', 'C', 'D'],
   attempts: 0,
   completed: false,
 }

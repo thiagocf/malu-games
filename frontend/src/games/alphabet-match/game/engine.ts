@@ -15,6 +15,10 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function buildLetterOptions(correctLetter: string, availableLetters: string[]): string[] {
+  if (availableLetters.length < 4) {
+    throw new Error('Alphabet Match requires at least 4 distinct letters')
+  }
+
   const distractors = shuffle(availableLetters.filter(letter => letter !== correctLetter)).slice(0, 3)
   return shuffle([correctLetter, ...distractors])
 }

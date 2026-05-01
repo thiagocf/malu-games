@@ -178,6 +178,18 @@ describe('createGame', () => {
       expect(distractors).toHaveLength(3)
     })
   })
+
+  it('requires at least 4 distinct catalog letters for letter options', () => {
+    const smallCatalog = [
+      makeAnimal('abelha', 'Abelha', 'A'),
+      makeAnimal('baleia', 'Baleia', 'B'),
+      makeAnimal('cachorro', 'Cachorro', 'C'),
+    ]
+
+    expect(() => createGame({ totalRounds: 3, animals: smallCatalog })).toThrow(
+      'Alphabet Match requires at least 4 distinct letters',
+    )
+  })
 })
 
 describe('checkAnswer', () => {
