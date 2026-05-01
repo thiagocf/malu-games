@@ -9,9 +9,19 @@ const playWrong = vi.fn()
 const playVictory = vi.fn()
 const speakAnimalName = vi.fn()
 const speakAnimalError = vi.fn()
+const speakRoundIntro = vi.fn()
+const speakLetter = vi.fn()
 
 vi.mock('./useSounds', () => ({
-  useSounds: () => ({ playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError }),
+  useSounds: () => ({
+    playCorrect,
+    playWrong,
+    playVictory,
+    speakAnimalName,
+    speakAnimalError,
+    speakRoundIntro,
+    speakLetter,
+  }),
 }))
 
 const makeAnimal = (id: string, firstLetter: string): Animal => ({
@@ -43,6 +53,8 @@ beforeEach(() => {
   playVictory.mockClear()
   speakAnimalName.mockClear()
   speakAnimalError.mockClear()
+  speakRoundIntro.mockClear()
+  speakLetter.mockClear()
 })
 
 describe('useGame — previewAnimal', () => {
@@ -289,5 +301,35 @@ describe('useGame — guards', () => {
     act(() => { result.current.previewAnimal(round.correctAnimal.id) })
 
     expect(speakAnimalName).not.toHaveBeenCalled()
+  })
+})
+
+describe('useGame — audio da letra', () => {
+  it('chama speakRoundIntro com a letra ao iniciar a primeira rodada', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const letter = result.current.currentRound!.letter
+    expect(speakRoundIntro).toHaveBeenCalledWith(letter)
+  })
+
+  it('chama speakRoundIntro com a nova letra ao avançar rodada', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    speakRoundIntro.mockClear()
+
+    const round = result.current.currentRound!
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+    act(() => { result.current.dismissSuccess() })
+
+    const newLetter = result.current.currentRound!.letter
+    expect(speakRoundIntro).toHaveBeenCalledWith(newLetter)
+  })
+
+  it('speakLetterReplay chama speakLetter com a letra da rodada atual', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const letter = result.current.currentRound!.letter
+
+    act(() => { result.current.speakLetterReplay() })
+
+    expect(speakLetter).toHaveBeenCalledWith(letter)
   })
 })

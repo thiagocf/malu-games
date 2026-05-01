@@ -13,13 +13,19 @@ export function useGame(config: GameConfig) {
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null)
   const [blockedIds, setBlockedIds] = useState<string[]>([])
 
-  const { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError } = useSounds()
+  const { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakRoundIntro, speakLetter } = useSounds()
 
   const currentRound = state.rounds[state.currentRoundIndex] ?? null
 
   useEffect(() => {
     if (state.isComplete) playVictory()
   }, [state.isComplete, playVictory])
+
+  useEffect(() => {
+    const round = state.rounds[state.currentRoundIndex]
+    if (!round) return
+    speakRoundIntro(round.letter)
+  }, [state.currentRoundIndex, state.rounds, speakRoundIntro])
 
   const previewAnimal = useCallback((animalId: string) => {
     if (feedback || success) return
@@ -71,6 +77,11 @@ export function useGame(config: GameConfig) {
     setBlockedIds([])
   }, [config])
 
+  const speakLetterReplay = useCallback(() => {
+    if (!currentRound) return
+    speakLetter(currentRound.letter)
+  }, [currentRound, speakLetter])
+
   return {
     state,
     currentRound,
@@ -83,5 +94,6 @@ export function useGame(config: GameConfig) {
     dismissFeedback,
     dismissSuccess,
     restart,
+    speakLetterReplay,
   }
 }
