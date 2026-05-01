@@ -69,6 +69,7 @@ export function AlphabetMatchGame({ onBackToMenu }: Props) {
         <SuccessPopup
           animal={success.animal}
           letter={success.letter}
+          messageIndex={success.messageIndex}
           onNext={dismissSuccess}
         />
       )}

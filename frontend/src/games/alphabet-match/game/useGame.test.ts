@@ -11,6 +11,7 @@ const speakAnimalName = vi.fn()
 const speakAnimalError = vi.fn()
 const speakRoundIntro = vi.fn()
 const speakLetter = vi.fn()
+const speakSuccessMessage = vi.fn()
 
 vi.mock('./useSounds', () => ({
   useSounds: () => ({
@@ -21,6 +22,7 @@ vi.mock('./useSounds', () => ({
     speakAnimalError,
     speakRoundIntro,
     speakLetter,
+    speakSuccessMessage,
   }),
 }))
 
@@ -55,6 +57,7 @@ beforeEach(() => {
   speakAnimalError.mockClear()
   speakRoundIntro.mockClear()
   speakLetter.mockClear()
+  speakSuccessMessage.mockClear()
 })
 
 describe('useGame — previewAnimal', () => {
@@ -115,6 +118,7 @@ describe('useGame — confirmAnimal (acerto)', () => {
     expect(result.current.success).not.toBeNull()
     expect(result.current.success!.animal.id).toBe(round.correctAnimal.id)
     expect(result.current.success!.letter).toBe(round.letter)
+    expect(result.current.success!.messageIndex).toBeGreaterThanOrEqual(0)
   })
 
   it('limpa selectedAnimalId após acerto', () => {
@@ -145,6 +149,22 @@ describe('useGame — confirmAnimal (acerto)', () => {
     act(() => { result.current.confirmAnimal() })
 
     expect(result.current.state.totalAttempts).toBe(1)
+  })
+
+  it('fala a mesma frase que sera exibida no popup de sucesso', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(speakSuccessMessage).toHaveBeenCalledWith(
+      expect.stringContaining(round.correctAnimal.label)
+    )
+    expect(speakSuccessMessage).toHaveBeenCalledWith(
+      expect.stringContaining(round.letter)
+    )
+    expect(result.current.success!.messageIndex).toBeGreaterThanOrEqual(0)
   })
 })
 
@@ -309,6 +329,29 @@ describe('useGame — audio da letra', () => {
     const { result } = renderGame({ totalRounds: 3, animals })
     const letter = result.current.currentRound!.letter
     expect(speakRoundIntro).toHaveBeenCalledWith(letter)
+  })
+
+  it('nao repete speakRoundIntro quando a rodada atual e atualizada por acerto', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    speakRoundIntro.mockClear()
+
+    act(() => { result.current.previewAnimal(round.correctAnimal.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(speakRoundIntro).not.toHaveBeenCalled()
+  })
+
+  it('nao repete speakRoundIntro quando a rodada atual e atualizada por erro', () => {
+    const { result } = renderGame({ totalRounds: 3, animals })
+    const round = result.current.currentRound!
+    const wrong = round.options.find(a => a.id !== round.correctAnimal.id)!
+    speakRoundIntro.mockClear()
+
+    act(() => { result.current.previewAnimal(wrong.id) })
+    act(() => { result.current.confirmAnimal() })
+
+    expect(speakRoundIntro).not.toHaveBeenCalled()
   })
 
   it('chama speakRoundIntro com a nova letra ao avançar rodada', () => {

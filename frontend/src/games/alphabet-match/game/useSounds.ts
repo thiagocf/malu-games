@@ -94,6 +94,10 @@ export function useSounds() {
     speak(letter ? `Isso mesmo! ${label}, com a letra ${letter}!` : label)
   }, [])
 
+  const speakSuccessMessage = useCallback((message: string) => {
+    speak(message)
+  }, [])
+
   const speakAnimalError = useCallback((label: string, gender: 'M' | 'F') => {
     const prefix = gender === 'F' ? 'Essa é a' : 'Esse é o'
     speak(`${prefix} ${label}!`)
@@ -107,5 +111,5 @@ export function useSounds() {
     speak(`Letra ${letter}`)
   }, [])
 
-  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakRoundIntro, speakLetter }
+  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakSuccessMessage, speakRoundIntro, speakLetter }
 }
