@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ExitConfirmPopup } from './ExitConfirmPopup'
+import { LogoMark } from './LogoMark'
 import styles from './TopBar.module.css'
 
 type Props = {
@@ -23,7 +24,8 @@ export function TopBar({ isInGame, onExitGame }: Props) {
           onClick={handleClick}
           disabled={!isInGame}
         >
-          <span style={{color:'#fbbf24'}}>◆</span> Malu Games
+          <LogoMark />
+          <span>Malu<span className={styles.logoAccent}>Games</span></span>
         </button>
       </header>
       {showConfirm && (

@@ -11,10 +11,17 @@
 .title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   font-weight: 800;
-  color: #0f3a3a;
+  color: var(--mg-ink-900);
   text-align: center;
   line-height: 1.1;
   letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.titleAccent {
+  color: var(--mg-teal-600);
 }
 
 .subtitle {

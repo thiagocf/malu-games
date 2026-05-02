@@ -84,6 +84,12 @@ api/src/
   health/              # GET /health
 ```
 
+## Design tokens
+
+All CSS values for color, shadow, border, radius, and motion **must use the custom properties defined in `frontend/src/index.css`** (prefix `--mg-`). Never hardcode color hex values or shadow/radius values in component CSS modules. If a token doesn't exist yet, add it to `index.css` first.
+
+Palette summary: teal (`--mg-teal-*`) as primary, amber (`--mg-amber-*`) as warm accent, ink (`--mg-ink-*`) for text, flat cream background (`--mg-bg`). No purple, violet, or pink — those are v1 and have been replaced.
+
 ## Architecture
 
 **Strict separation between logic and UI (per game):**

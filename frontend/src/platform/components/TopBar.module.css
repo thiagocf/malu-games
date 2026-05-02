@@ -20,13 +20,20 @@
   border: none;
   font-size: 1.125rem;
   font-weight: 800;
-  color: #0d9488;
+  color: var(--mg-ink-900);
   font-family: inherit;
   cursor: default;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   transition: opacity 0.15s;
+}
+
+.logoAccent {
+  color: var(--mg-teal-600);
 }
 
 .logo.clickable {

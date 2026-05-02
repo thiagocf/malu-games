@@ -1,5 +1,64 @@
 :root {
+  /* Layout */
   --topbar-height: 56px;
+
+  /* Teal — primary */
+  --mg-teal-700: #0f766e;
+  --mg-teal-600: #0d9488;
+  --mg-teal-500: #14b8a6;
+  --mg-teal-200: #99f6e4;
+  --mg-teal-100: #ccfbf1;
+  --mg-teal-50:  #f0fdfa;
+
+  /* Amber — accent */
+  --mg-amber-400: #fbbf24;
+  --mg-amber-200: #fde68a;
+  --mg-amber-50:  #fef3c7;
+
+  /* Ink — text (teal-tinted charcoal) */
+  --mg-ink-900: #0f3a3a;
+  --mg-ink-700: #284a4a;
+  --mg-ink-500: #5b6b6b;
+  --mg-ink-300: #9aa5a5;
+
+  /* State */
+  --mg-green-600: #16a34a;
+  --mg-green-200: #bbf7d0;
+  --mg-red-500:   #ef4444;
+  --mg-red-200:   #fecaca;
+
+  /* Surfaces */
+  --mg-bg:          #f5f1e8;
+  --mg-bg-soft:     #faf7f0;
+  --mg-white:       #ffffff;
+  --mg-bar:         rgba(255, 255, 255, 0.92);
+  --mg-scrim-soft:  rgba(245, 241, 232, 0.85);
+  --mg-scrim-dark:  rgba(15, 58, 58, 0.50);
+
+  /* Borders */
+  --mg-border:        1.5px solid #99f6e4;
+  --mg-border-strong: 1.5px solid #0d9488;
+  --mg-border-subtle: 1px solid rgba(15, 58, 58, 0.06);
+
+  /* Shadows */
+  --mg-shadow-card:   0 1px 0 rgba(15, 58, 58, 0.04), 0 2px 8px rgba(15, 58, 58, 0.04);
+  --mg-shadow-hover:  0 4px 14px rgba(13, 148, 136, 0.14);
+  --mg-shadow-btn:    0 1px 0 rgba(15, 58, 58, 0.08);
+  --mg-shadow-dialog: 0 12px 40px rgba(15, 58, 58, 0.16);
+  --mg-shadow-focus:  0 0 0 3px #99f6e4;
+  --mg-shadow-match:  0 0 0 4px #bbf7d0, 0 0 0 2px #16a34a;
+
+  /* Radii */
+  --mg-radius-btn: 12px;
+  --mg-radius-lg:  14px;
+  --mg-radius-xl:  18px;
+  --mg-radius-2xl: 22px;
+
+  /* Motion */
+  --mg-ease:        cubic-bezier(0.32, 0.72, 0, 1);
+  --mg-ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --mg-dur-fast:    150ms;
+  --mg-dur-med:     260ms;
 }
 
 *,
@@ -13,8 +72,9 @@
 body {
   overflow-x: hidden;
   min-height: 100vh;
-  background: #f5f1e8;
+  background: var(--mg-bg);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--mg-ink-900);
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.005em;
 }
