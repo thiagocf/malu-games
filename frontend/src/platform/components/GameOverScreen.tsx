@@ -7,6 +7,8 @@ type Props = {
   onRestart: () => void
   onBackToMenu: () => void
   onOpenSettings?: () => void
+  onExtraAction?: () => void
+  extraActionLabel?: string
   restartLabel?: string
   menuLabel?: string
 }
@@ -17,6 +19,8 @@ export function GameOverScreen({
   onRestart,
   onBackToMenu,
   onOpenSettings,
+  onExtraAction,
+  extraActionLabel,
   restartLabel = 'Jogar de novo',
   menuLabel = 'Outro jogo',
 }: Props) {
@@ -37,6 +41,9 @@ export function GameOverScreen({
         {children}
         <div className={styles.buttons}>
           <button className={styles.button} onClick={onRestart}>{restartLabel}</button>
+          {onExtraAction && extraActionLabel && (
+            <button className={styles.buttonSecondary} onClick={onExtraAction}>{extraActionLabel}</button>
+          )}
           <button className={styles.buttonSecondary} onClick={onBackToMenu}>{menuLabel}</button>
         </div>
       </div>

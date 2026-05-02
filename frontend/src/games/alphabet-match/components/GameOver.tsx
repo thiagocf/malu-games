@@ -6,14 +6,17 @@ type Props = {
   totalRounds: number
   onRestart: () => void
   onBackToMenu: () => void
+  onChangeMode: () => void
 }
 
-export function GameOver({ totalAttempts, totalRounds, onRestart, onBackToMenu }: Props) {
+export function GameOver({ totalAttempts, totalRounds, onRestart, onBackToMenu, onChangeMode }: Props) {
   return (
     <GameOverScreen
       title="Parabéns!"
       onRestart={onRestart}
       onBackToMenu={onBackToMenu}
+      onExtraAction={onChangeMode}
+      extraActionLabel="Trocar modo"
     >
       <div className={styles.confetti} aria-hidden="true">
         {['★','✦','✧','◆','✺','✹','❋','✿'].map((e, i) => (

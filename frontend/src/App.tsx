@@ -9,6 +9,8 @@ import { DeckSelector } from './games/memory/components/DeckSelector'
 import { Settings } from './games/memory/components/Settings'
 import { DECKS } from './games/memory/assets/decks/decks'
 import { AlphabetMatchGame } from './games/alphabet-match/AlphabetMatchGame'
+import { AlphabetModeSelectScreen } from './games/alphabet-match/components/AlphabetModeSelectScreen'
+import type { AlphabetMatchMode } from './games/alphabet-match/game/types'
 import type { DeckConfig, PlayerMode } from './games/memory/game/types'
 import './App.css'
 
@@ -22,11 +24,17 @@ export function App() {
   const [pairCount, setPairCount] = useState(DEFAULT_PAIR_COUNT)
   const [playerMode, setPlayerMode] = useState<PlayerMode>('solo')
   const [playerNames, setPlayerNames] = useState<string[]>(DEFAULT_PLAYER_NAMES)
+  const [selectedAlphabetMode, setSelectedAlphabetMode] = useState<AlphabetMatchMode | null>(null)
 
   const handleBackToMenu = () => {
     setSelectedGame(null)
     setSelectedDeck(null)
+    setSelectedAlphabetMode(null)
     setShowSettings(false)
+  }
+
+  const handleBackToAlphabetModes = () => {
+    setSelectedAlphabetMode(null)
   }
 
   const openSettings = () => setShowSettings(true)
@@ -74,7 +82,18 @@ export function App() {
         )
       )}
       {selectedGame === 'alphabet-match' && (
-        <AlphabetMatchGame onBackToMenu={handleBackToMenu} />
+        selectedAlphabetMode === null ? (
+          <AlphabetModeSelectScreen
+            onSelectMode={setSelectedAlphabetMode}
+            onBackToMenu={handleBackToMenu}
+          />
+        ) : (
+          <AlphabetMatchGame
+            mode={selectedAlphabetMode}
+            onBackToMenu={handleBackToMenu}
+            onChangeMode={handleBackToAlphabetModes}
+          />
+        )
       )}
       </div>
     </>
