@@ -111,5 +111,13 @@ export function useSounds() {
     speak(`Letra ${letter}`)
   }, [])
 
-  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakSuccessMessage, speakRoundIntro, speakLetter }
+  const speakLetterError = useCallback((letter: string) => {
+    speak(`Esse animal não começa com a letra ${letter}.`)
+  }, [])
+
+  const speakAnimalToLetterIntro = useCallback((label: string) => {
+    speak(`Qual letra combina com ${label}?`)
+  }, [])
+
+  return { playCorrect, playWrong, playVictory, speakAnimalName, speakAnimalError, speakSuccessMessage, speakRoundIntro, speakLetter, speakLetterError, speakAnimalToLetterIntro }
 }
