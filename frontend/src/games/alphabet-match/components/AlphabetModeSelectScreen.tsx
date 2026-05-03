@@ -10,7 +10,7 @@ export function AlphabetModeSelectScreen({ onSelectMode, onBackToMenu }: Props) 
   return (
     <main className={styles.container}>
       <button type="button" className={styles.backButton} onClick={onBackToMenu}>
-        Voltar
+        ← Voltar
       </button>
       <h1 className={styles.title}>Como quer brincar?</h1>
       <div className={styles.grid}>
