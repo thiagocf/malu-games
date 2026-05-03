@@ -14,6 +14,15 @@ function shuffle<T>(arr: T[]): T[] {
   return copy
 }
 
+function buildLetterOptions(correctLetter: string, availableLetters: string[]): string[] {
+  if (availableLetters.length < 4) {
+    throw new Error('Alphabet Match requires at least 4 distinct letters')
+  }
+
+  const distractors = shuffle(availableLetters.filter(letter => letter !== correctLetter)).slice(0, 3)
+  return shuffle([correctLetter, ...distractors])
+}
+
 export function createGame(config: GameConfig): GameState {
   const { totalRounds, animals } = config
   const available = buildAvailableLetters(animals)
@@ -30,10 +39,13 @@ export function createGame(config: GameConfig): GameState {
     const candidates = animalsByLetter.get(letter)!
     const correctAnimal = candidates[Math.floor(Math.random() * candidates.length)]
     const distractors = shuffle(animals.filter(a => a.firstLetter !== letter)).slice(0, 3)
+    const letterOptions = buildLetterOptions(correctAnimal.firstLetter, available)
+
     return {
       letter,
       correctAnimal,
       options: shuffle([correctAnimal, ...distractors]),
+      letterOptions,
       attempts: 0,
       completed: false,
     }
@@ -49,6 +61,18 @@ export function checkAnswer(
   const round = state.rounds[state.currentRoundIndex]
   const selectedAnimal = round.options.find(a => a.id === animalId)!
   return { correct: round.correctAnimal.id === animalId, selectedAnimal }
+}
+
+export function checkLetterAnswer(
+  state: GameState,
+  selectedLetter: string,
+): { correct: boolean; selectedLetter: string; correctAnimal: Animal } {
+  const round = state.rounds[state.currentRoundIndex]
+  return {
+    correct: round.correctAnimal.firstLetter === selectedLetter,
+    selectedLetter,
+    correctAnimal: round.correctAnimal,
+  }
 }
 
 export function recordAttempt(state: GameState): GameState {

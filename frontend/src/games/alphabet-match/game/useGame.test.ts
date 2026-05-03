@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { StrictMode } from 'react'
 import { useGame } from './useGame'
-import type { Animal, GameConfig } from './types'
+import type { AlphabetMatchMode, Animal, GameConfig } from './types'
 
 const playCorrect = vi.fn()
 const playWrong = vi.fn()
@@ -12,6 +12,8 @@ const speakAnimalError = vi.fn()
 const speakRoundIntro = vi.fn()
 const speakLetter = vi.fn()
 const speakSuccessMessage = vi.fn()
+const speakLetterError = vi.fn()
+const speakAnimalToLetterIntro = vi.fn()
 
 vi.mock('./useSounds', () => ({
   useSounds: () => ({
@@ -23,6 +25,8 @@ vi.mock('./useSounds', () => ({
     speakRoundIntro,
     speakLetter,
     speakSuccessMessage,
+    speakLetterError,
+    speakAnimalToLetterIntro,
   }),
 }))
 
@@ -45,8 +49,8 @@ const animals: Animal[] = [
   makeAnimal('elefante', 'E'),
 ]
 
-function renderGame(config: GameConfig) {
-  return renderHook(() => useGame(config), { wrapper: StrictMode })
+function renderGame(config: GameConfig, mode: AlphabetMatchMode = 'letter-to-animal') {
+  return renderHook(() => useGame(config, mode), { wrapper: StrictMode })
 }
 
 beforeEach(() => {
@@ -58,6 +62,8 @@ beforeEach(() => {
   speakRoundIntro.mockClear()
   speakLetter.mockClear()
   speakSuccessMessage.mockClear()
+  speakLetterError.mockClear()
+  speakAnimalToLetterIntro.mockClear()
 })
 
 describe('useGame — previewAnimal', () => {
@@ -374,5 +380,98 @@ describe('useGame — audio da letra', () => {
     act(() => { result.current.speakLetterReplay() })
 
     expect(speakLetter).toHaveBeenCalledWith(letter)
+  })
+})
+
+describe('useGame — animal-to-letter audio and selection', () => {
+  it('chama speakAnimalToLetterIntro ao iniciar no modo Ache a letra', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const animal = result.current.currentRound!.correctAnimal
+
+    expect(speakAnimalToLetterIntro).toHaveBeenCalledWith(animal.label)
+    expect(speakRoundIntro).not.toHaveBeenCalled()
+  })
+
+  it('previewChallengeAnimal fala o nome do animal correto', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const animal = result.current.currentRound!.correctAnimal
+
+    act(() => { result.current.previewChallengeAnimal() })
+
+    expect(speakAnimalName).toHaveBeenCalledWith(animal.label)
+  })
+
+  it('selectLetter define selectedLetter e fala a letra', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const letter = result.current.currentRound!.letterOptions[0]
+
+    act(() => { result.current.selectLetter(letter) })
+
+    expect(result.current.selectedLetter).toBe(letter)
+    expect(speakLetter).toHaveBeenCalledWith(letter)
+  })
+
+  it('não repete speakAnimalToLetterIntro quando a rodada atual registra erro', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const round = result.current.currentRound!
+    const wrongLetter = round.letterOptions.find(letter => letter !== round.correctAnimal.firstLetter)!
+    speakAnimalToLetterIntro.mockClear()
+
+    act(() => { result.current.selectLetter(wrongLetter) })
+    act(() => { result.current.confirmLetter() })
+
+    expect(speakAnimalToLetterIntro).not.toHaveBeenCalled()
+  })
+})
+
+describe('useGame — confirmLetter', () => {
+  it('mostra feedback sem nome do animal ao errar uma letra', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const round = result.current.currentRound!
+    const wrongLetter = round.letterOptions.find(letter => letter !== round.correctAnimal.firstLetter)!
+
+    act(() => { result.current.selectLetter(wrongLetter) })
+    act(() => { result.current.confirmLetter() })
+
+    expect(result.current.letterFeedback).toEqual({ animal: round.correctAnimal, selectedLetter: wrongLetter })
+    expect(result.current.feedback).toBeNull()
+    expect(result.current.blockedLetters).toContain(wrongLetter)
+    expect(speakLetterError).toHaveBeenCalledWith(wrongLetter)
+  })
+
+  it('limpa selectedLetter após erro', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const round = result.current.currentRound!
+    const wrongLetter = round.letterOptions.find(letter => letter !== round.correctAnimal.firstLetter)!
+
+    act(() => { result.current.selectLetter(wrongLetter) })
+    act(() => { result.current.confirmLetter() })
+
+    expect(result.current.selectedLetter).toBeNull()
+  })
+
+  it('define success ao acertar uma letra', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+    const round = result.current.currentRound!
+
+    act(() => { result.current.selectLetter(round.correctAnimal.firstLetter) })
+    act(() => { result.current.confirmLetter() })
+
+    expect(result.current.success).not.toBeNull()
+    expect(result.current.success!.animal.id).toBe(round.correctAnimal.id)
+    expect(result.current.success!.letter).toBe(round.correctAnimal.firstLetter)
+    expect(playCorrect).toHaveBeenCalledTimes(1)
+    expect(speakSuccessMessage).toHaveBeenCalledWith(expect.stringContaining(round.correctAnimal.label))
+    expect(speakSuccessMessage).toHaveBeenCalledWith(expect.stringContaining(round.correctAnimal.firstLetter))
+  })
+
+  it('confirmLetter não faz nada sem selectedLetter', () => {
+    const { result } = renderGame({ totalRounds: 3, animals }, 'animal-to-letter')
+
+    act(() => { result.current.confirmLetter() })
+
+    expect(result.current.letterFeedback).toBeNull()
+    expect(result.current.success).toBeNull()
+    expect(result.current.state.totalAttempts).toBe(0)
   })
 })

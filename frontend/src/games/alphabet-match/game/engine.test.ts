@@ -3,6 +3,7 @@ import {
   buildAvailableLetters,
   createGame,
   checkAnswer,
+  checkLetterAnswer,
   recordAttempt,
   completeRound,
   advanceRound,
@@ -61,6 +62,7 @@ function makeRound(overrides?: Partial<Round>): Round {
       makeAnimal('baleia', 'Baleia', 'B'),
       makeAnimal('raposa', 'Raposa', 'R'),
     ],
+    letterOptions: ['E', 'G', 'B', 'R'],
     attempts: 0,
     completed: false,
     ...overrides,
@@ -146,6 +148,48 @@ describe('createGame', () => {
       expect(round.completed).toBe(false)
     })
   })
+
+  it('each round has exactly 4 letter options', () => {
+    createGame(fullConfig).rounds.forEach(round => {
+      expect(round.letterOptions).toHaveLength(4)
+    })
+  })
+
+  it('letter options include the correct letter', () => {
+    createGame(fullConfig).rounds.forEach(round => {
+      expect(round.letterOptions).toContain(round.correctAnimal.firstLetter)
+    })
+  })
+
+  it('letter options use distinct available catalog letters', () => {
+    const availableLetters = buildAvailableLetters(fullCatalog)
+
+    createGame(fullConfig).rounds.forEach(round => {
+      expect(new Set(round.letterOptions).size).toBe(round.letterOptions.length)
+      round.letterOptions.forEach(letter => {
+        expect(availableLetters).toContain(letter)
+      })
+    })
+  })
+
+  it('letter distractors exclude the correct letter', () => {
+    createGame(fullConfig).rounds.forEach(round => {
+      const distractors = round.letterOptions.filter(letter => letter !== round.correctAnimal.firstLetter)
+      expect(distractors).toHaveLength(3)
+    })
+  })
+
+  it('requires at least 4 distinct catalog letters for letter options', () => {
+    const smallCatalog = [
+      makeAnimal('abelha', 'Abelha', 'A'),
+      makeAnimal('baleia', 'Baleia', 'B'),
+      makeAnimal('cachorro', 'Cachorro', 'C'),
+    ]
+
+    expect(() => createGame({ totalRounds: 3, animals: smallCatalog })).toThrow(
+      'Alphabet Match requires at least 4 distinct letters',
+    )
+  })
 })
 
 describe('checkAnswer', () => {
@@ -159,6 +203,24 @@ describe('checkAnswer', () => {
     const result = checkAnswer(makeGameState(), 'gato')
     expect(result.correct).toBe(false)
     expect(result.selectedAnimal.id).toBe('gato')
+  })
+})
+
+describe('checkLetterAnswer', () => {
+  it('returns correct: true when the selected letter is the correct one', () => {
+    const result = checkLetterAnswer(makeGameState(), 'E')
+
+    expect(result.correct).toBe(true)
+    expect(result.selectedLetter).toBe('E')
+    expect(result.correctAnimal.id).toBe('elefante')
+  })
+
+  it('returns correct: false when the selected letter is wrong', () => {
+    const result = checkLetterAnswer(makeGameState(), 'B')
+
+    expect(result.correct).toBe(false)
+    expect(result.selectedLetter).toBe('B')
+    expect(result.correctAnimal.id).toBe('elefante')
   })
 })
 
